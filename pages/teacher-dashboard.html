@@ -1,0 +1,218 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Bảng điều khiển Giáo Viên - Kid Games</title>
+    <link rel="stylesheet" href="../styles.css">
+    <link rel="stylesheet" href="teacher-dashboard.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+</head>
+<body>
+    <header>
+        <nav class="navbar">
+            <div class="logo">
+                <img src="../images/KidGames-logo.jpg" alt="Kid Games Logo">
+                <span class="logo-text">KidGames: Trò chơi giáo dục dành cho học sinh lớp 1</span>
+            </div>
+            <div class="nav-links">
+                <a href="#" class="active">Bảng điều khiển</a>
+                <div class="notification-dropdown">
+                    <a href="#" class="notification-btn">
+                        <i class="fas fa-bell"></i>
+                        <span class="notification-badge">3</span>
+                    </a>
+                    <div class="notification-content">
+                        <div class="notification-header">
+                            <h3>Thông báo</h3>
+                            <button class="mark-all-read">Đánh dấu đã đọc</button>
+                        </div>
+                        <div class="notification-list">
+                            <!-- Thông báo sẽ được thêm vào đây bằng JavaScript -->
+                        </div>
+                    </div>
+                </div>
+                <div class="profile-dropdown">
+                    <a href="#" class="profile-btn"><i class="fas fa-user"></i></a>
+                    <div class="dropdown-content">
+                        <a href="profile.html"><i class="fas fa-user-circle"></i> Thông tin cá nhân</a>
+                        <a href="#" id="logout-btn"><i class="fas fa-sign-out-alt"></i> Đăng xuất</a>
+                    </div>
+                </div>
+            </div>
+        </nav>
+    </header>
+
+    <main class="dashboard-container">
+        <div class="dashboard-sidebar">
+            <div class="user-info">
+                <h2>Cô Nguyễn Thị B</h2>
+                <p>Giáo viên lớp 1A</p>
+            </div>
+            <nav class="sidebar-nav">
+                <a href="#" class="active" data-section="overview"><i class="fas fa-home"></i> Tổng Quan</a>
+                <a href="#" data-section="classes"><i class="fas fa-users"></i> Lớp học</a>
+                <a href="#" data-section="settings"><i class="fas fa-cog"></i> Cài Đặt</a>
+            </nav>
+        </div>
+
+        <div class="dashboard-content">
+            <!-- Section: Tổng quan -->
+            <section id="overview" class="dashboard-section active">
+                <div class="welcome-banner">
+                    <h1>Chào mừng trở lại!</h1>
+                    <p>Quản lý lớp học và theo dõi tiến độ học sinh</p>
+                </div>
+
+                <div class="quick-actions">
+                    <button id="create-class-btn" class="btn primary">Tạo Lớp Mới</button>
+                </div>
+
+                <div class="overview-stats">
+                    <div class="stat-card">
+                        <i class="fas fa-chalkboard-teacher"></i>
+                        <h3>Tổng số lớp</h3>
+                        <p class="stat-value" id="total-classes">0</p>
+                    </div>
+                    <div class="stat-card">
+                        <i class="fas fa-user-graduate"></i>
+                        <h3>Tổng học sinh</h3>
+                        <p class="stat-value" id="total-students">0</p>
+                    </div>
+                </div>
+
+                <!-- Danh sách lớp học -->
+                <div class="classes-section">
+                    <h2>Lớp học của tôi</h2>
+                    <div class="classes-grid" id="classes-grid-overview">
+                        <!-- JS sẽ render các class-card vào đây -->
+                    </div>
+                </div>
+
+                <!-- Hoạt động gần đây -->
+                <div class="recent-activities">
+                    <div class="section-header">
+                        <h3>Hoạt động gần đây</h3>
+                        <div class="activity-filters">
+                            <select>
+                                <option value="all">Tất cả hoạt động</option>
+                                <option value="class">Lớp học</option>
+                                <option value="student">Học sinh</option>
+                            </select>
+                        </div>
+                    </div>
+                    <div class="activity-timeline">
+                        <div class="activity-item">
+                            <div class="activity-icon">
+                                <i class="fas fa-user-plus"></i>
+                            </div>
+                            <div class="activity-content">
+                                <h4>Thêm học sinh mới</h4>
+                                <p>Đã thêm 3 học sinh vào lớp 1B</p>
+                                <span class="activity-time">1 ngày trước</span>
+                            </div>
+                        </div>
+                        <div class="activity-item">
+                            <div class="activity-icon">
+                                <i class="fas fa-users"></i>
+                            </div>
+                            <div class="activity-content">
+                                <h4>Tạo lớp mới</h4>
+                                <p>Đã tạo lớp 1C</p>
+                                <span class="activity-time">2 ngày trước</span>
+                            </div>
+                        </div>
+                        <div class="activity-item">
+                            <div class="activity-icon">
+                                <i class="fas fa-user-edit"></i>
+                            </div>
+                            <div class="activity-content">
+                                <h4>Cập nhật thông tin</h4>
+                                <p>Đã cập nhật thông tin lớp 1A</p>
+                                <span class="activity-time">3 ngày trước</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Section: Lớp học -->
+            <section id="classes" class="dashboard-section">
+                <h2>Lớp học của tôi</h2>
+                <div class="classes-grid" id="classes-grid-tab">
+                    <!-- JS sẽ render các class-card vào đây -->
+                </div>
+            </section>
+
+            <!-- Section: Cài đặt -->
+            <section id="settings" class="dashboard-section">
+                <h2>Cài Đặt</h2>
+                <div class="settings-grid">
+                    <div class="settings-card">
+                        <h3><i class="fas fa-bell"></i> Tùy Chỉnh Thông Báo</h3>
+                        <div class="settings-content">
+                            <div class="setting-item">
+                                <label>Thông báo chung</label>
+                                <label class="switch">
+                                    <input type="checkbox" id="notifications" checked>
+                                    <span class="slider"></span>
+                                </label>
+                            </div>
+                            <div class="setting-item">
+                                <label>Cập nhật tiến độ</label>
+                                <label class="switch">
+                                    <input type="checkbox" id="progress_updates" checked>
+                                    <span class="slider"></span>
+                                </label>
+                            </div>
+                            <div class="setting-item">
+                                <label>Thành tích</label>
+                                <label class="switch">
+                                    <input type="checkbox" id="achievements" checked>
+                                    <span class="slider"></span>
+                                </label>
+                            </div>
+                            <div class="setting-item">
+                                <label>Thông báo lớp học</label>
+                                <label class="switch">
+                                    <input type="checkbox" id="class_announcements" checked>
+                                    <span class="slider"></span>
+                                </label>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </section>
+        </div>
+    </main>
+    <div id="create-class-modal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2>Tạo Lớp Mới</h2>
+                <button id="close-create-class" class="close-modal">&times;</button>
+            </div>
+            <form id="create-class-form">
+                <div class="form-group">
+                    <label for="class-name">Tên Lớp</label>
+                    <input type="text" id="class-name" required>
+                </div>
+                <div class="form-group">
+                    <label for="class-desc">Mô Tả</label>
+                    <textarea id="class-desc"></textarea>
+                </div>
+                <div id="create-class-error" class="error-message"></div>
+                <div class="form-actions">
+                    <button type="button" class="btn secondary" id="close-create-class">Hủy</button>
+                    <button type="submit" class="btn primary">Tạo Lớp</button>
+                </div>
+            </form>
+        </div>
+    </div>
+    <script src="https://www.gstatic.com/firebasejs/11.6.1/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/11.6.1/firebase-auth-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore-compat.js"></script>
+    <script src="../../firebase-config.js"></script>
+    <script src="teacher-dashboard.js"></script>
+</body>
+</html> 

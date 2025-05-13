@@ -1,0 +1,71 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Thông tin cá nhân - KidGames</title>
+    <link rel="stylesheet" href="../styles.css">
+    <link rel="stylesheet" href="profile.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+</head>
+<body>
+    <header>
+        <nav class="navbar">
+            <div class="logo">
+                <img src="../images/KidGames-logo.jpg" alt="Kid Games Logo">
+                <span class="logo-text">KidGames: Trò chơi giáo dục dành cho học sinh lớp 1</span>
+            </div>
+            <div class="nav-links">
+                <a href="student-dashboard.html">Bảng điều khiển</a>
+                <a href="#" class="profile-btn"><i class="fas fa-user"></i></a>
+            </div>
+        </nav>
+    </header>
+
+    <main class="profile-container">
+        <div class="profile-card">
+            <div class="profile-header">
+                <div class="profile-info">
+                    <h2 id="user-name">Nguyễn Văn A</h2>
+                    <p id="user-role">Học sinh</p>
+                    <p id="user-class">Lớp 1A</p>
+                </div>
+            </div>
+
+            <div class="profile-content">
+                <form id="profile-form">
+                    <div class="form-group">
+                        <label><i class="fas fa-user"></i> Họ và tên</label>
+                        <input type="text" id="fullname" name="fullname" value="Nguyễn Văn A">
+                    </div>
+                    <div class="form-group">
+                        <label><i class="fas fa-envelope"></i> Email</label>
+                        <input type="email" id="email" name="email" value="nguyenvana@example.com" readonly>
+                    </div>
+                    <div class="form-group">
+                        <label><i class="fas fa-phone"></i> Số điện thoại</label>
+                        <input type="tel" id="phone" name="phone" value="0123456789">
+                    </div>
+                    <div class="form-group">
+                        <label><i class="fas fa-calendar"></i> Ngày sinh</label>
+                        <input type="date" id="birthday" name="birthday" value="2017-01-01">
+                    </div>
+                    <div class="form-group">
+                        <label><i class="fas fa-venus-mars"></i> Giới tính</label>
+                        <select id="gender" name="gender">
+                            <option value="male">Nam</option>
+                            <option value="female">Nữ</option>
+                        </select>
+                    </div>
+                    <div class="form-actions">
+                        <button type="submit" class="save-btn">Lưu thay đổi</button>
+                        <button type="button" class="cancel-btn" onclick="window.location.href='student-dashboard.html'">Hủy</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </main>
+
+    <script src="profile.js"></script>
+</body>
+</html> 

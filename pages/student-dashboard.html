@@ -1,0 +1,447 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Bảng Điều Khiển Học Sinh - Kid Games</title>
+    <link rel="stylesheet" href="../styles.css">
+    <link rel="stylesheet" href="student-dashboard.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+</head>
+<body>
+    <header>
+        <nav class="navbar">
+            <div class="logo">
+                <img src="../images/KidGames-logo.jpg" alt="Kid Games Logo">
+                <span class="logo-text">KidGames: Trò chơi giáo dục dành cho học sinh lớp 1</span>
+            </div>
+            <div class="nav-links">
+                <a href="#" class="active">Bảng điều khiển</a>
+                <div class="notification-dropdown">
+                    <a href="#" class="notification-btn">
+                        <i class="fas fa-bell"></i>
+                        <span class="notification-badge">3</span>
+                    </a>
+                    <div class="notification-content">
+                        <div class="notification-header">
+                            <h3>Thông báo</h3>
+                            <button class="mark-all-read">Đánh dấu đã đọc</button>
+                        </div>
+                        <div class="notification-list">
+                            <!-- Thông báo sẽ được thêm vào đây bằng JavaScript -->
+                        </div>
+                    </div>
+                </div>
+                <div class="profile-dropdown">
+                    <a href="#" class="profile-btn"><i class="fas fa-user"></i></a>
+                    <div class="dropdown-content">
+                        <a href="profile.html"><i class="fas fa-user-circle"></i> Thông tin cá nhân</a>
+                        <a href="#" id="logout-btn"><i class="fas fa-sign-out-alt"></i> Đăng xuất</a>
+                    </div>
+                </div>
+            </div>
+        </nav>
+    </header>
+
+    <main class="dashboard-container">
+        <div class="dashboard-sidebar">
+            <div class="user-info">
+                <h2>
+                    Nguyễn Văn A
+                    <span class="level-badge"><i class="fas fa-level-up-alt"></i> Cấp 13</span>
+                </h2>
+                <p>Lớp 1A</p>
+                <div class="user-stats">
+                    <div class="user-stat">
+                        <i class="fas fa-fire"></i>
+                        <span><strong>7</strong> ngày</span>
+                    </div>
+                    <div class="user-stat">
+                        <i class="fas fa-gem"></i>
+                        <span><strong>120</strong></span>
+                    </div>
+                </div>
+            </div>
+            <nav class="sidebar-nav">
+                <a href="#" class="active"><i class="fas fa-home"></i> Tổng quan</a>
+                <a href="#"><i class="fas fa-trophy"></i> Thành Tích</a>
+                <a href="#"><i class="fas fa-chart-line"></i> Tiến Độ</a>
+                <a href="#"><i class="fas fa-medal"></i> Bảng xếp hạng</a>
+                <a href="#"><i class="fas fa-cog"></i> Cài Đặt</a>
+            </nav>
+        </div>
+
+        <div class="dashboard-content">
+            <!-- Section Tổng quan -->
+            <div class="overview-section">
+                <div class="overview-grid">
+                    <div class="overview-card" data-section="achievements">
+                        <div class="overview-icon"><i class="fas fa-trophy"></i></div>
+                        <div>
+                            <div class="overview-value">4</div>
+                            <div class="overview-label">Thành tích</div>
+                        </div>
+                    </div>
+                    <div class="overview-card" data-section="progress">
+                        <div class="overview-icon"><i class="fas fa-chart-line"></i></div>
+                        <div>
+                            <div class="overview-value">65%</div>
+                            <div class="overview-label">Tiến độ học tập</div>
+                        </div>
+                    </div>
+                    <div class="overview-card" data-section="leaderboard">
+                        <div class="overview-icon"><i class="fas fa-medal"></i></div>
+                        <div>
+                            <div class="overview-value">#4</div>
+                            <div class="overview-label">Xếp hạng</div>
+                        </div>
+                    </div>
+                    <div class="overview-card" data-section="activity">
+                        <div class="overview-icon"><i class="fas fa-clock"></i></div>
+                        <div>
+                            <div class="overview-value">120</div>
+                            <div class="overview-label">Phút học</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="welcome-banner">
+                <h1>Chào mừng trở lại!</h1>
+                <p>Hãy tiếp tục phấn đấu để đạt được nhiều thành tích hơn nhé!</p>
+            </div>
+            
+            <div class="quick-actions">
+                <button id="join-class-btn" class="action-btn">
+                    <i class="fas fa-plus-circle"></i>
+                    Tham gia lớp học
+                </button>
+                <button id="manage-parents-btn" class="action-btn">
+                    <i class="fas fa-users"></i>
+                    Quản lý phụ huynh
+                </button>
+            </div>
+            <div class="achievements-section">
+                <h2>Thành tích của em</h2>
+                <div class="achievements-grid">
+                    <div class="achievement-card">
+                        <i class="fas fa-star"></i>
+                        <h3>Học Sinh Xuất Sắc</h3>
+                        <p>Hoàn thành 10 bài học</p>
+                        <span class="achievement-date">Đạt được: 15/03/2024</span>
+                    </div>
+                    <div class="achievement-card">
+                        <i class="fas fa-trophy"></i>
+                        <h3>Nhà Toán Học</h3>
+                        <p>Giải đúng 50 bài toán</p>
+                        <span class="achievement-date">Đạt được: 10/03/2024</span>
+                    </div>
+                    <div class="achievement-card">
+                        <i class="fas fa-medal"></i>
+                        <h3>Siêu Đọc Giả</h3>
+                        <p>Đọc xong 20 truyện</p>
+                        <span class="achievement-date">Đạt được: 05/03/2024</span>
+                    </div>
+                    <div class="achievement-card">
+                        <i class="fas fa-award"></i>
+                        <h3>Chăm Chỉ</h3>
+                        <p>Học liên tục 7 ngày</p>
+                        <span class="achievement-date">Đạt được: 01/03/2024</span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Tabs -->
+            <div class="dashboard-tabs">
+                <button class="tab-btn active" data-tab="progress">Tiến độ học tập</button>
+                <button class="tab-btn" data-tab="activity">Nhật ký hoạt động</button>
+            </div>
+
+            <!-- Tab content: Tiến độ học tập -->
+            <div class="tab-content tab-progress active">
+                <div class="progress-section">
+                    <h2>Tiến độ học tập</h2>
+                    <div class="progress-tree"></div>
+                </div>
+            </div>
+
+            <!-- Tab content: Nhật ký hoạt động -->
+            <div class="tab-content tab-activity">
+                <div class="activity-section">
+                    <h2>Nhật ký hoạt động</h2>
+                    <div class="activity-header">
+                        <div class="activity-filters">
+                            <select>
+                                <option>7 ngày qua</option>
+                                <option>30 ngày qua</option>
+                                <option>Tất cả thời gian</option>
+                            </select>
+                            <select>
+                                <option>Tất cả môn học</option>
+                                <option>Toán</option>
+                                <option>Tiếng Việt</option>
+                            </select>
+                            <select>
+                                <option>Tất cả hoạt động</option>
+                                <option>Học tập</option>
+                                <option>Luyện tập</option>
+                            </select>
+                        </div>
+                        <div class="activity-summary">
+                            <span><strong>5</strong> phút bài tập</span>
+                            <span style="margin: 0 10px;">|</span>
+                            <span><strong>10</strong> tổng số phút học</span>
+                        </div>
+                    </div>
+                    <div class="activity-table-wrapper">
+                        <table class="activity-table">
+                            <thead>
+                                <tr>
+                                    <th>HOẠT ĐỘNG</th>
+                                    <th>NGÀY</th>
+                                    <th>CẤP ĐỘ</th>
+                                    <th>THAY ĐỔI</th>
+                                    <th>SỐ CÂU ĐÚNG/TỔNG SỐ CÂU</th>
+                                    <th>THỜI GIAN (PHÚT)</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr>
+                                    <td>
+                                        <strong>Học tập: Chương 1. Bài 1. Phương hướng </strong><br>
+                                        <span class="activity-desc">Dạy trẻ cách xác dịnh phương hướng</span>
+                                    </td>
+                                    <td>Thg 05 09, 2025 vào lúc 15:46</td>
+                                    <td><a href="#">Chi tiết</a></td>
+                                    <td>-7</td>
+                                    <td>7/7</td>
+                                    <td>10</td>
+                                </tr>
+                                <tr>
+                                    <td>
+                                        <strong>Luyên tập: Mini-game đếm</strong><br>
+                                        <span class="activity-desc">Luyện tập đếm số</span>
+                                    </td>
+                                    <td>Thg 05 09, 2025 vào lúc 15:46</td>
+                                    <td><a href="#">Chi tiết</a></td>
+                                    <td>Không có</td>
+                                    <td>7/10</td>
+                                    <td>5</td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+
+            <div class="leaderboard-section">
+                <h2>Bảng xếp hạng</h2>
+                <div class="leaderboard-header">
+                    <div class="leaderboard-filters">
+                        <select>
+                            <option>Lớp 1A</option>
+                            <option>Lớp 1B</option>
+                            <option>Lớp 1C</option>
+                        </select>
+                        <select>
+                            <option>Sắp xếp theo thời gian học</option>
+                            <option>Sắp xếp theo kim cương</option>
+                        </select>
+                    </div>
+                </div>
+                <div class="leaderboard-table-wrapper">
+                    <table class="leaderboard-table">
+                        <thead>
+                            <tr>
+                                <th>Xếp hạng</th>
+                                <th>Họ và tên</th>
+                                <th>Lớp</th>
+                                <th>Cấp độ</th>
+                                <th>Thời gian học</th>
+                                <th>Kim cương</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr class="rank-1">
+                                <td>1</td>
+                                <td>Hoàng Xuân Huy</td>
+                                <td>Lớp 1A</td>
+                                <td>Cấp 13</td>
+                                <td>15 giờ</td>
+                                <td>130</td>
+                            </tr>
+                            <tr class="rank-2">
+                                <td>2</td>
+                                <td>User test 1</td>
+                                <td>Lớp 1A</td>
+                                <td>Cấp 3</td>
+                                <td>0.4 giờ</td>
+                                <td>30</td>
+                            </tr>
+                            <tr class="rank-3">
+                                <td>3</td>
+                                <td>User test 2</td>
+                                <td>Lớp 1A</td>
+                                <td>Cấp 3</td>
+                                <td>0.4 giờ</td>
+                                <td>20</td>
+                            </tr>
+                            <tr>
+                                <td>4</td>
+                                <td>Bạn</td>
+                                <td>Lớp 1A</td>
+                                <td>Cấp 4</td>
+                                <td>0.2 giờ</td>
+                                <td>17</td>
+                            </tr>
+                            <tr>
+                                <td>5</td>
+                                <td>Trần Văn Luyện</td>
+                                <td>Lớp 1A</td>
+                                <td>Cấp 4</td>
+                                <td>0.2 giờ</td>
+                                <td>15</td>
+                            </tr>
+                            <tr>
+                                <td>6</td>
+                                <td>User test 3</td>
+                                <td>Lớp 1A</td>
+                                <td>Cấp 1</td>
+                                <td>0.1 giờ</td>
+                                <td>15</td>
+                            </tr>
+                            <tr>
+                                <td>7</td>
+                                <td>Tạ Quang Chiến</td>
+                                <td>Lớp 1A</td>
+                                <td>Cấp 1</td>
+                                <td>0.1 giờ</td>
+                                <td>10</td>
+                            </tr>
+                            <tr>
+                                <td>8</td>
+                                <td>Lê Quang Tuấn</td>
+                                <td>Lớp 1A</td>
+                                <td>Cấp 1</td>
+                                <td>0.1 giờ</td>
+                                <td>10</td>
+                            </tr>
+                            <tr>
+                                <td>9</td>
+                                <td>Trần Đức Bo</td>
+                                <td>Lớp 1A</td>
+                                <td>Cấp 1</td>
+                                <td>0.1 giờ</td>
+                                <td>10</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+
+            <div class="settings-section" id="settings-section">
+                <h2>Cài Đặt</h2>
+                <div class="settings-grid">
+                    <div class="settings-card">
+                        <h3><i class="fas fa-bell"></i> Tùy Chỉnh Thông Báo</h3>
+                        <div class="settings-content">
+                            <div class="setting-item">
+                                <label>Thông báo chung</label>
+                                <label class="switch">
+                                    <input type="checkbox" id="notifications" checked>
+                                    <span class="slider"></span>
+                                </label>
+                            </div>
+                            <div class="setting-item">
+                                <label>Cập nhật tiến độ</label>
+                                <label class="switch">
+                                    <input type="checkbox" id="progress_updates" checked>
+                                    <span class="slider"></span>
+                                </label>
+                            </div>
+                            <div class="setting-item">
+                                <label>Thành tích</label>
+                                <label class="switch">
+                                    <input type="checkbox" id="achievements" checked>
+                                    <span class="slider"></span>
+                                </label>
+                            </div>
+                            <div class="setting-item">
+                                <label>Thông báo lớp học</label>
+                                <label class="switch">
+                                    <input type="checkbox" id="class_announcements" checked>
+                                    <span class="slider"></span>
+                                </label>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <!-- Thêm các modal -->
+    <!-- Modal Tham gia lớp học -->
+    <div id="join-class-modal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2>Tham gia lớp học</h2>
+                <button class="close-modal">&times;</button>
+            </div>
+            <div class="modal-body">
+                <form id="join-class-form">
+                    <div class="form-group">
+                        <label for="class-code">Mã lớp học</label>
+                        <input type="text" id="class-code" required>
+                    </div>
+                    <div class="form-actions">
+                        <button type="submit" class="btn-primary">Tham gia</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal Quản lý phụ huynh -->
+    <div id="manage-parents-modal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2>Quản lý phụ huynh</h2>
+                <button class="close-modal">&times;</button>
+            </div>
+            <div class="modal-body">
+                <div class="add-parent-section">
+                    <h3>Thêm phụ huynh</h3>
+                    <form id="add-parent-form">
+                        <div class="form-group">
+                            <label for="parent-email">Email phụ huynh</label>
+                            <input type="email" id="parent-email" required>
+                        </div>
+                        <div class="form-actions">
+                            <button type="submit" class="btn-primary">Thêm</button>
+                        </div>
+                    </form>
+                </div>
+                <div class="parents-list">
+                    <h3>Danh sách phụ huynh</h3>
+                    <div class="parents-table-wrapper">
+                        <table class="parents-table">
+                            <thead>
+                                <tr>
+                                    <th>Email</th>
+                                    <th>Trạng thái</th>
+                                    <th>Thao tác</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <!-- Danh sách phụ huynh sẽ được thêm vào đây bằng JavaScript -->
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="student-dashboard.js"></script>
+</body>
+</html> 

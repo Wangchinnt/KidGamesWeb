@@ -1,0 +1,562 @@
+/* Auth Container */
+.auth-container {
+    min-height: 100vh;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: linear-gradient(135deg, #ff9a8b 0%, #ff6a88 100%);
+    padding: 20px;
+}
+
+.auth-box {
+    background: white;
+    padding: 40px;
+    border-radius: 15px;
+    box-shadow: 0 5px 20px rgba(0, 0, 0, 0.2);
+    width: 100%;
+    max-width: 400px;
+}
+
+.auth-box h2 {
+    text-align: center;
+    color: #4a90e2;
+    margin-bottom: 30px;
+}
+
+.form-group {
+    display: flex;
+    flex-direction: column;
+    gap: 0.4rem;
+    width: 381px;
+    height: 90px;
+}
+
+.form-group label {
+    display: block;
+    margin-bottom: 8px;
+    color: #555;
+}
+
+.form-group input {
+    width: 100%;
+    padding: 12px;
+    border: 1px solid #ddd;
+    border-radius: 8px;
+    font-size: 1rem;
+}
+
+.form-group input:focus {
+    outline: none;
+    border-color: #4a90e2;
+    box-shadow: 0 0 0 2px rgba(74, 144, 226, 0.2);
+}
+
+.error-message, .success-message {
+    position: fixed;
+    top: 24px;
+    left: 50%;
+    transform: translateX(-50%);
+    z-index: 9999;
+    min-width: 320px;
+    max-width: 90vw;
+    padding: 14px 24px;
+    border-radius: 8px;
+    font-size: 1.1rem;
+    text-align: center;
+    box-shadow: 0 4px 16px rgba(0,0,0,0.08);
+    display: none;
+}
+
+.success-message {
+    color: #28a745;
+    background: #eafaf1;
+    border: 1px solid #b7e4c7;
+}
+
+.error-message {
+    color: #ff6a88;
+    background: #fff0f3;
+    border: 1px solid #ffb3c6;
+}
+
+.auth-switch {
+    text-align: center;
+    margin-top: 20px;
+    color: #666;
+}
+
+.auth-switch a {
+    color: #4a90e2;
+    text-decoration: none;
+    font-weight: 600;
+}
+
+.auth-switch a:hover {
+    text-decoration: underline;
+}
+
+/* Auth Card */
+.auth-card {
+    background-color: white;
+    border-radius: 20px;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    padding: 3rem;
+    width: 100%;
+    max-width: 900px;
+}
+
+/* Auth Header */
+.auth-header {
+    text-align: center;
+    margin-bottom: 2rem;
+}
+
+.auth-logo {
+    height: 60px;
+    margin-bottom: 1rem;
+}
+
+.auth-header h1 {
+    color: #333;
+    margin-bottom: 0.5rem;
+    font-size: 1.8rem;
+}
+
+.auth-header p {
+    color: #666;
+}
+
+/* Auth Form */
+.auth-form {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    width: 100%;
+}
+
+.form-group {
+    display: flex;
+    flex-direction: column;
+    gap: 0.4rem;
+
+}
+
+.form-group label {
+    color: #333;
+    font-weight: 600;
+    font-size: 1rem;
+    margin-bottom: 0.5rem;
+}
+
+.input-with-icon {
+    position: relative;
+    width: 100%;
+    height: 48px;
+}
+
+.input-with-icon i {
+    position: absolute;
+    left: 1rem;
+    top: 50%;
+    transform: translateY(-50%);
+    color: #666;
+    font-size: 1.2rem;
+}
+
+.input-with-icon input {
+    width: 100%;
+    height: 100%;
+    padding: 0 1rem 0 3rem;
+    border: 2px solid #e0e0e0;
+    border-radius: 12px;
+    font-size: 1rem;
+    transition: all 0.3s;
+}
+
+.input-with-icon input:focus {
+    border-color: #4a90e2;
+    outline: none;
+    box-shadow: 0 4px 12px rgba(74, 144, 226, 0.1);
+    transform: translateY(-1px);
+}
+
+.toggle-password {
+    position: absolute;
+    right: 50px;
+    top: 50%;
+    transform: translateY(-50%);
+    color: #888;
+    z-index: 2;
+}
+
+/* Role Selector */
+.role-selector {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 1rem;
+    margin-top: 0.5rem;
+}
+
+.role-option {
+    position: relative;
+}
+
+.role-option input[type="radio"] {
+    display: none;
+}
+
+.role-label {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 0.8rem;
+    padding: 1.5rem 1rem;
+    border: 2px solid #e0e0e0;
+    border-radius: 12px;
+    cursor: pointer;
+    transition: all 0.3s;
+    text-align: center;
+}
+
+.role-label i {
+    font-size: 2rem;
+    color: #666;
+    margin-bottom: 0.5rem;
+}
+
+.role-option input[type="radio"]:checked + .role-label {
+    background-color: #4a90e2;
+    border-color: #4a90e2;
+    color: white;
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(74, 144, 226, 0.2);
+}
+
+.role-option input[type="radio"]:checked + .role-label i {
+    color: white;
+}
+
+.role-option:hover .role-label {
+    border-color: #4a90e2;
+    transform: translateY(-2px);
+}
+
+/* Checkbox */
+.checkbox-container {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    cursor: pointer;
+}
+
+.checkbox-container input {
+    display: none;
+}
+
+.checkmark {
+    width: 20px;
+    height: 20px;
+    border: 2px solid #e0e0e0;
+    border-radius: 4px;
+    display: inline-block;
+    position: relative;
+    transition: all 0.3s;
+}
+
+.checkbox-container input:checked + .checkmark {
+    background-color: #4a90e2;
+    border-color: #4a90e2;
+}
+
+.checkmark:after {
+    content: "";
+    position: absolute;
+    display: none;
+    left: 6px;
+    top: 2px;
+    width: 5px;
+    height: 10px;
+    border: solid white;
+    border-width: 0 2px 2px 0;
+    transform: rotate(45deg);
+}
+
+.checkbox-container input:checked + .checkmark:after {
+    display: block;
+}
+
+/* Social Login */
+.social-login {
+    text-align: center;
+    margin: 1.5rem 0;
+}
+
+.social-login p {
+    color: #666;
+    margin-bottom: 0.8rem;
+    font-size: 0.9rem;
+}
+
+.social-buttons {
+    display: flex;
+    justify-content: center;
+}
+
+.social-btn {
+    padding: 0.7rem 2rem;
+    border: 2px solid #e0e0e0;
+    border-radius: 8px;
+    background-color: white;
+    color: #333;
+    font-weight: 600;
+    font-size: 0.9rem;
+    cursor: pointer;
+    transition: all 0.3s;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.4rem;
+}
+
+.social-btn i {
+    font-size: 1.1rem;
+}
+
+.social-btn.google:hover {
+    background-color: #f1f1f1;
+    border-color: #db4437;
+    color: #db4437;
+}
+
+.social-btn.apple {
+    display: none;
+}
+
+/* Auth Footer */
+.auth-footer {
+    text-align: center;
+    margin-top: 1.5rem;
+    color: #666;
+}
+
+.auth-footer a {
+    color: #4a90e2;
+    text-decoration: none;
+    font-weight: 600;
+}
+
+.auth-footer a:hover {
+    text-decoration: underline;
+}
+
+/* Remember & Forgot */
+.remember-forgot {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.forgot-password {
+    color: #4a90e2;
+    text-decoration: none;
+    font-size: 0.9rem;
+}
+
+.forgot-password:hover {
+    text-decoration: underline;
+}
+
+/* Responsive Design */
+@media (max-width: 480px) {
+    .auth-container {
+        padding: 1rem;
+    }
+
+    .auth-card {
+        padding: 1.5rem;
+    }
+
+    .role-selector {
+        flex-direction: column;
+    }
+
+    .social-buttons {
+        flex-direction: column;
+    }
+}
+
+/* Thêm vào file auth.css hiện có */
+
+.gender-selector {
+    display: flex;
+    gap: 1rem;
+    width: 100%;
+    height: 48px;
+}
+
+.gender-option {
+    flex: 1;
+    height: 100%;
+}
+
+.gender-option input[type="radio"] {
+    display: none;
+}
+
+.gender-label {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    height: 100%;
+    border: 2px solid #e0e0e0;
+    border-radius: 12px;
+    cursor: pointer;
+    transition: all 0.3s;
+    font-size: 1.1rem;
+    padding: 0 1rem;
+}
+
+.gender-label i {
+    font-size: 1.2rem;
+    color: #666;
+}
+
+.gender-option input[type="radio"]:checked + .gender-label {
+    background-color: #4a90e2;
+    border-color: #4a90e2;
+    color: white;
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(74, 144, 226, 0.2);
+}
+
+.gender-option input[type="radio"]:checked + .gender-label i {
+    color: white;
+}
+
+.gender-option:hover .gender-label {
+    border-color: #4a90e2;
+    transform: translateY(-2px);
+}
+
+/* Responsive cho gender selector */
+@media (max-width: 480px) {
+    .gender-selector {
+        flex-direction: column;
+        gap: 0.5rem;
+    }
+}
+
+/* Thêm vào file auth.css */
+
+.form-columns {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 2rem;
+    margin-bottom: 2rem;
+    justify-items: center;
+}
+
+.form-column {
+    display: flex;
+    flex-direction: column;
+    gap: 1.5rem;
+    align-items: center;
+}
+
+/* Responsive cho form 2 cột */
+@media (max-width: 768px) {
+    .form-columns {
+        grid-template-columns: 1fr;
+        gap: 1rem;
+    }
+}
+
+/* Điều chỉnh nút submit */
+.btn.primary.full-width {
+    padding: 1.2rem;
+    font-size: 1.1rem;
+    margin-top: 1rem;
+    border-radius: 12px;
+    transition: all 0.3s;
+}
+
+.btn.primary.full-width:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(74, 144, 226, 0.2);
+}
+
+/* Thêm style cho role section */
+.role-section {
+    width: 100%;
+    max-width: 600px;
+    margin: 0 auto 2rem auto;
+    text-align: center;
+}
+
+/* Cập nhật form columns */
+.form-columns {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 2rem;
+    margin-bottom: 2rem;
+    justify-items: center;
+    width: 100%;
+}
+
+.form-column {
+    display: flex;
+    flex-direction: column;
+    gap: 1.5rem;
+    align-items: center;
+}
+
+/* Cập nhật form-group để có chiều cao cố định */
+.form-group {
+    display: flex;
+    flex-direction: column;
+    gap: 0.4rem;
+    min-height: 90px;
+}
+
+/* Cập nhật gender selector để có chiều cao phù hợp */
+.gender-selector {
+    display: flex;
+    gap: 1rem;
+
+}
+
+.gender-option {
+    flex: 1;
+}
+
+.gender-label {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.5rem;
+    padding: 0.8rem;
+    border: 2px solid #e0e0e0;
+    border-radius: 12px;
+    cursor: pointer;
+    transition: all 0.3s;
+    font-size: 1.1rem;
+    height: 48px;
+}
+
+/* Cập nhật input fields để có chiều cao đồng nhất */
+.input-with-icon input {
+    width: 100%;
+    padding: 0.8rem 1rem 0.8rem 3rem;
+    border: 2px solid #e0e0e0;
+    border-radius: 12px;
+    font-size: 1rem;
+    transition: all 0.3s;
+    height: 48px;
+}
+
+.input-with-icon input:focus {
+    border-color: #4a90e2;
+    outline: none;
+    box-shadow: 0 4px 12px rgba(74, 144, 226, 0.1);
+    transform: translateY(-1px);
+} 

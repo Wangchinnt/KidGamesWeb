@@ -1,0 +1,80 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Đăng Nhập - Kid Games</title>
+    <link rel="stylesheet" href="../../styles.css">
+    <link rel="stylesheet" href="signin.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+</head>
+<body>
+    <div id="success-message" class="success-message"></div>
+    <div id="error-message" class="error-message"></div>
+    <div class="auth-container">
+        <div class="auth-card">
+            <div class="auth-header">
+                <img src="../../images/KidGames-logo.jpg" alt="Kid Games Logo" class="auth-logo">
+                <h1>Chào Mừng Trở Lại!</h1>
+                <p>Đăng nhập để tiếp tục học tập</p>
+            </div>
+
+            <form id="signin-form" class="auth-form">
+                <div class="form-group">
+                    <label for="UsernameOrEmail">Tên đăng nhập hoặc email</label>
+                    <div class="input-with-icon">
+                        <i class="fas fa-user"></i>
+                        <input type="text" id="UsernameOrEmail" name="UsernameOrEmail" required placeholder="Nhập tên đăng nhập hoặc email">
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label for="password">Mật Khẩu</label>
+                    <div class="input-with-icon">
+                        <i class="fas fa-lock"></i>
+                        <input type="password" id="password" name="password" required placeholder="Nhập mật khẩu">
+                        <span class="toggle-password" id="togglePassword" style="cursor:pointer;">
+                            <i class="fas fa-eye-slash"></i>
+                        </span>
+                    </div>
+                </div>
+
+                <div class="form-group remember-forgot">
+                    <label class="checkbox-container">
+                        <input type="checkbox">
+                        <span class="checkmark"></span>
+                        Ghi nhớ đăng nhập
+                    </label>
+                    <a href="forgotpassword.html" class="forgot-password">Quên mật khẩu?</a>
+                </div>
+
+                <button type="submit" class="btn primary full-width">
+                    <i class="fas fa-sign-in-alt"></i>
+                    Đăng Nhập
+                </button>
+            </form>
+
+            <div class="social-login">
+                <p>Hoặc đăng nhập bằng</p>
+                <div class="social-buttons">
+                    <button class="social-btn google">
+                        <i class="fab fa-google"></i>
+                        Google
+                    </button>
+                </div>
+            </div>
+
+            <div class="auth-footer">
+                <p>Chưa có tài khoản? <a href="signup.html">Đăng Ký</a></p>
+            </div>
+        </div>
+    </div>
+
+    <!-- Firebase SDK -->
+    <script src="https://www.gstatic.com/firebasejs/11.6.1/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/11.6.1/firebase-auth-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore-compat.js"></script>
+    <script src="../../firebase-config.js"></script>
+    <script src="signin.js"></script>
+</body>
+</html> 

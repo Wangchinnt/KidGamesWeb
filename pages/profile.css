@@ -1,0 +1,128 @@
+/* Profile Container */
+.profile-container {
+    padding: 40px 20px;
+    min-height: calc(100vh - 80px);
+    background: #f0f4fa;
+}
+
+.profile-card {
+    max-width: 800px;
+    margin: 0 auto;
+    background: #fff;
+    border-radius: 12px;
+    box-shadow: 0 2px 16px rgba(0,0,0,0.08);
+    overflow: hidden;
+}
+
+.profile-header {
+    padding: 32px;
+    text-align: center;
+    background: #f8f9fa;
+    border-bottom: 1px solid #eee;
+}
+
+.profile-info h2 {
+    margin: 0 0 8px;
+    color: #333;
+    font-size: 24px;
+}
+
+.profile-info p {
+    margin: 4px 0;
+    color: #666;
+}
+
+.profile-content {
+    padding: 32px;
+}
+
+.form-group {
+    margin-bottom: 24px;
+}
+
+.form-group label {
+    display: block;
+    margin-bottom: 8px;
+    color: #333;
+    font-weight: 500;
+}
+
+.form-group label i {
+    margin-right: 8px;
+    color: #2d8cf0;
+}
+
+.form-group input,
+.form-group select {
+    width: 100%;
+    padding: 10px 12px;
+    border: 1px solid #ddd;
+    border-radius: 6px;
+    font-size: 15px;
+    transition: border-color 0.3s;
+}
+
+.form-group input:focus,
+.form-group select:focus {
+    border-color: #2d8cf0;
+    outline: none;
+}
+
+.form-group input[readonly] {
+    background: #f8f9fa;
+    cursor: not-allowed;
+}
+
+.form-actions {
+    display: flex;
+    gap: 12px;
+    margin-top: 32px;
+}
+
+.save-btn,
+.cancel-btn {
+    padding: 12px 24px;
+    border-radius: 6px;
+    font-size: 15px;
+    cursor: pointer;
+    transition: all 0.3s;
+}
+
+.save-btn {
+    background: #2d8cf0;
+    color: #fff;
+    border: none;
+}
+
+.save-btn:hover {
+    background: #2b7ad9;
+}
+
+.cancel-btn {
+    background: #fff;
+    color: #666;
+    border: 1px solid #ddd;
+}
+
+.cancel-btn:hover {
+    background: #f8f9fa;
+}
+
+@media (max-width: 768px) {
+    .profile-header {
+        padding: 24px;
+    }
+    
+    .profile-content {
+        padding: 24px;
+    }
+    
+    .form-actions {
+        flex-direction: column;
+    }
+    
+    .save-btn,
+    .cancel-btn {
+        width: 100%;
+    }
+} 

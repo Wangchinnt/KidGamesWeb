@@ -1,0 +1,143 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Kid Games - Học Mà Chơi, Chơi Mà Học</title>
+    <link rel="stylesheet" href="styles.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+</head>
+<body>
+    <header>
+        <nav class="navbar">
+            <div class="logo">
+                <img src="images/KidGames-logo.jpg" alt="Kid Games Logo">
+                <span class="logo-text">KidGames: Trò chơi giáo dục dành cho học sinh lớp 1</span>
+            </div>
+            <div class="nav-links">
+                <a href="#" class="active">Trang Chủ</a>
+                <a href="#">Giới Thiệu</a>
+                <a href="#">Liên Hệ</a>
+                <a href="pages/auth/signin.html" class="btn primary">Đăng Nhập</a>
+            </div>
+        </nav>
+    </header>
+
+    <section class="hero">
+        <div class="hero-content">
+            <h1>Học Mà Chơi, Chơi Mà Học</h1>
+            <p>Website theo dõi và quản lý KidGames: Trò chơi giáo dục dành cho học sinh lớp 1, giúp phụ huynh và giáo viên theo dõi tiến độ học tập của con và học sinh.</p>
+            <div class="hero-buttons">
+                <a href="pages/auth/signup.html" class="btn primary">Bắt đầu</a>
+                <a href="#" class="btn secondary" id="learnMoreBtn">Tìm Hiểu Thêm</a>
+            </div>
+        </div>
+        <div class="hero-image">
+            <img src="images/happy_student.jpg" alt="Học sinh vui học">
+        </div>
+    </section>
+
+    <!-- Thêm popup -->
+    <div id="popup" class="popup">
+        <div class="popup-content">
+            <span class="close-btn">&times;</span>
+            <h2>Thông Tin Thêm</h2>
+            <p>KidGames là một trò chơi giáo dục được thiết kế đặc biệt cho học sinh lớp 1. 
+                Trong trò chơi có các mini-games tương tác giúp trẻ học tập một cách vui vẻ và hiệu quả. 
+                Hiện tại bạn đang dùng phiên bản website quản lý và theo dõi dành cho phụ huynh và giáo viên.
+            </p>
+            <p>Với KidGames, phụ huynh và giáo viên có thể:</p>
+            <ul>
+                <li>Theo dõi tiến độ học tập của trẻ</li>
+                <li>Nhận báo cáo chi tiết về kết quả học tập</li>
+                <li>Tương tác và hỗ trợ trẻ trong quá trình học</li>
+            </ul>
+        </div>
+    </div>
+
+    <section class="features">
+        <h2>Tính Năng Nổi Bật</h2>
+        <div class="feature-grid">
+            <div class="feature-card">
+                <i class="fas fa-gamepad"></i>
+                <h3>Trò Chơi Tương Tác</h3>
+                <ul>
+                    <li>Học toán qua các trò chơi vui nhộn</li>
+                    <li>Rèn luyện tư duy logic</li>
+                    <li>Phát triển kỹ năng giải quyết vấn đề</li>
+                </ul>
+            </div>
+            <div class="feature-card">
+                <i class="fas fa-chart-line"></i>
+                <h3>Theo Dõi Tiến Độ</h3>
+                <ul>
+                    <li>Báo cáo chi tiết về quá trình học tập</li>
+                    <li>Đánh giá năng lực theo thời gian</li>
+                </ul>
+            </div>
+            <div class="feature-card">
+                <i class="fas fa-users"></i>
+                <h3>Tương Tác Đa Chiều</h3>
+                <ul>
+                    <li>Kết nối giữa giáo viên và học sinh</li>
+                    <li>Phụ huynh theo dõi tiến độ của con</li>
+                </ul>
+            </div>
+        </div>
+    </section>
+
+    <section class="how-it-works">
+        <h2>Cách Thức Hoạt Động</h2>
+        <div class="steps-grid">
+            <div class="step-card">
+                <div class="step-number">1</div>
+                <h3>Đăng Ký Tài Khoản</h3>
+                <p>Tạo tài khoản phù hợp với vai trò của bạn: học sinh, phụ huynh hoặc giáo viên.</p>
+            </div>
+            <div class="step-card">
+                <div class="step-number">2</div>
+                <h3>Kết nối tới học sinh hoặc con em của bạn</h3>
+                <p>Kết nối với học sinh hoặc con em của bạn để theo dõi tiến độ học tập.</p>
+            </div>
+            <div class="step-card">
+                <div class="step-number">3</div>
+                <h3>Theo dõi tiến độ học tập</h3>
+                <p>Theo dõi tiến độ học tập của học sinh hoặc con em của bạn thông qua các báo cáo chi tiết.</p>
+            </div>
+        </div>
+    </section>
+
+    <footer>
+        <div class="footer-content">
+            <div class="footer-section">
+                <h4>Về Chúng Tôi</h4>
+                <a href="#">Giới Thiệu</a>
+                <a href="#">Đội Ngũ</a>
+                <a href="#">Sứ Mệnh</a>
+            </div>
+            <div class="footer-section">
+                <h4>Trò chơi</h4>
+                <a href="#">Toán Học</a>
+                <a href="#">Tiếng Việt</a>
+                <a href="#">Tiếng Anh</a>
+            </div>
+            <div class="footer-section">
+                <h4>Hỗ Trợ</h4>
+                <a href="#">Câu Hỏi Thường Gặp</a>
+                <a href="#">Liên Hệ</a>
+                <a href="#">Chính Sách Bảo Mật</a>
+            </div>
+        </div>
+        <div class="footer-bottom">
+            <p>&copy; 2025 Kid Games. Tất cả quyền được bảo lưu.</p>
+        </div>
+    </footer>
+
+    <!-- Firebase SDKs (compat) -->
+    <script src="https://www.gstatic.com/firebasejs/11.6.1/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/11.6.1/firebase-auth-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore-compat.js"></script>
+    <script src="firebase-config.js"></script>
+    <script src="script.js"></script>
+</body>
+</html> 
