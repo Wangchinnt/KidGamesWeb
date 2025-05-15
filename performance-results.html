@@ -1,0 +1,89 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <style>
+        body {
+            padding: 20px;
+            font-family: Arial, sans-serif;
+            max-width: 600px;
+            margin: 0 auto;
+        }
+        .chart-container {
+            width: 500px;
+            height: 300px;
+            margin: 0 auto;
+        }
+        .stats {
+            margin-top: 20px;
+            font-size: 14px;
+        }
+        .pass { color: green; }
+        .fail { color: red; }
+    </style>
+</head>
+<body>
+    <div class="chart-container">
+        <canvas id="responseTimeChart"></canvas>
+    </div>
+    <div class="stats">
+        <h2>Performance Statistics</h2>
+        <p>Total Page Load Time: 
+            <span class="${stats.pageLoad.avg <= 1 ? 'pass' : 'fail'}">
+                ${(stats.pageLoad.avg/1000).toFixed(2)}s
+            </span>
+        </p>
+        <p>DOM Content Loaded: ${(stats.domContent.avg/1000).toFixed(2)}s</p>
+        <p>First Paint: ${(stats.firstPaint.avg/1000).toFixed(2)}s</p>
+    </div>
+    <script>
+        const ctx = document.getElementById('responseTimeChart').getContext('2d');
+        new Chart(ctx, {
+            type: 'line',
+            data: {
+                labels: ["01","11","21","31","41","51","61","71","81","91"],
+                datasets: [
+                    {
+                        label: 'Total Page Load Time',
+                        data: [1.118, 1.219, 1.095, 0.677, 0.617, 0.670, 1.179, 0.584, 1.095, 0.647],
+                        borderColor: 'rgb(75, 192, 192)',
+                        tension: 0.1
+                    },
+                    {
+                        label: 'DOM Content Loaded',
+                        data: [0.357, 0.237, 0.092, 0.147, 0.089, 0.142, 0.171, 0.064, 0.095, 0.113],
+                        borderColor: 'rgb(255, 99, 132)',
+                        tension: 0.1
+                    },
+                    {
+                        label: 'First Paint',
+                        data: [0.644, 0.520, 0.092, 0.140, 0.096, 0.148, 0.160, 0.084, 0.096, 0.116],
+                        borderColor: 'rgb(54, 162, 235)',
+                        tension: 0.1
+                    }
+                ]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                scales: {
+                    y: {
+                        beginAtZero: true,
+                        title: {
+                            display: true,
+                            text: 'Time (seconds)'
+                        }
+                    },
+                    x: {
+                        title: {
+                            display: true,
+                            text: 'Test Iteration'
+                        }
+                    }
+                }
+            }
+        });
+    </script>
+</body>
+</html>
+    

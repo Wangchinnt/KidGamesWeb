@@ -2,12 +2,18 @@ document.addEventListener('DOMContentLoaded', function() {
     initSignin();
     initShowHidePassword();
     initGoogleSignin();
+    initRememberMe();
 });
 
 function initSignin() {
     const signinForm = document.getElementById('signin-form');
     if (signinForm) {
         signinForm.addEventListener('submit', handleSigninSubmit);
+    }
+    // Remember Me
+    const rememberMe = localStorage.getItem('rememberMe');
+    if (rememberMe) {
+        document.querySelector('.checkbox-container input[type="checkbox"]').checked = true;
     }
 }
 
@@ -66,16 +72,17 @@ async function handleSigninSubmit(e) {
             const userDoc = await firebase.firestore().collection('users').doc(user.uid).get();
             const role = userDoc.data()?.role;
             setTimeout(() => {
-                if (role === 1) {
-                    window.location.href = '../teacher-dashboard.html';
-                } else if (role === 2) {
-                    window.location.href = '../parent-dashboard.html';
+                if (role === 2) {
+                    window.location.href = '../teacher-dashboard.html?userId=' + user.uid;
+                } else if (role === 1) {
+                    window.location.href = '../parent-dashboard.html?userId=' + user.uid;
                 } else {
-                    window.location.href = '../student-dashboard.html';
+                    window.location.href = '../student-dashboard.html?userId=' + user.uid;
                 }
             }, 1200);
         }
     } catch (error) {
+        console.error(error);
         showError("Thông tin đăng nhập hoặc mật khẩu không đúng.");
     }
 }
@@ -119,27 +126,59 @@ function initGoogleSignin() {
             const provider = new firebase.auth.GoogleAuthProvider();
             try {
                 const result = await firebase.auth().signInWithPopup(provider);
-                // Lấy user info
                 const user = result.user;
                 // Kiểm tra user đã có trong Firestore chưa, nếu chưa thì tạo mới
                 const userDoc = await firebase.firestore().collection('users').doc(user.uid).get();
+                let userRole = 0; // mặc định là student
                 if (!userDoc.exists) {
                     // Tạo user mới với thông tin từ Google
-                    await firebase.firestore().collection('users').doc(user.uid).set({
-                        user_name: user.displayName || "",
-                        full_name: user.displayName || "",
+                    await createUserInFirestore({
+                        userId: user.uid,
+                        username: user.displayName || "",
+                        fullname: user.displayName || "",
                         email: user.email,
-                        role: 3, // mặc định là student, hoặc cho chọn sau
-                        created_at: new Date().toISOString(),
-                        last_login: new Date().toISOString()
+                        birthdate: "",
+                        gender: 0,
+                        role: 0
                     });
+                } else {
+                    userRole = userDoc.data().role ?? 0;
                 }
+
+                // Remember Me
+                const rememberMe = document.querySelector('.checkbox-container input[type="checkbox"]')?.checked;
+                if (rememberMe) {
+                    localStorage.setItem('rememberMe', 'true');
+                } else {
+                    localStorage.removeItem('rememberMe');
+                }
+
                 showSuccess("Đăng nhập bằng Google thành công! Đang chuyển hướng...");
                 setTimeout(() => {
-                    window.location.href = '../student-dashboard.html'; // hoặc chuyển hướng theo role nếu muốn
+                    if (userRole === 2) {
+                        window.location.href = '../teacher-dashboard.html?userId=' + user.uid;
+                    } else if (userRole === 1) {
+                        window.location.href = '../parent-dashboard.html?userId=' + user.uid;
+                    } else {
+                        window.location.href = '../student-dashboard.html?userId=' + user.uid;
+                    }
                 }, 1200);
             } catch (error) {
+                console.error(error);
                 showError("Đăng nhập bằng Google thất bại.");
+            }
+        });
+    }
+}
+
+function initRememberMe() {
+    const rememberMe = document.querySelector('.checkbox-container input[type="checkbox"]');
+    if (rememberMe) {
+        rememberMe.addEventListener('change', function() {
+            if (this.checked) {
+                localStorage.setItem('rememberMe', 'true');
+            } else {
+                localStorage.removeItem('rememberMe');
             }
         });
     }

@@ -36,7 +36,7 @@
                 <div class="profile-dropdown">
                     <a href="#" class="profile-btn"><i class="fas fa-user"></i></a>
                     <div class="dropdown-content">
-                        <a href="profile.html"><i class="fas fa-user-circle"></i> Thông tin cá nhân</a>
+                        <a href="#" id="view-profile-btn"><i class="fas fa-user-circle"></i> Thông tin cá nhân</a>
                         <a href="#" id="logout-btn"><i class="fas fa-sign-out-alt"></i> Đăng xuất</a>
                     </div>
                 </div>
@@ -65,7 +65,7 @@
                 </div>
                 <div class="class-actions">
                     <button class="btn primary" id="addStudentBtn"><i class="fas fa-user-plus"></i> Thêm Học Sinh</button>
-                    <button class="btn secondary" id="editClassBtn"><i class="fas fa-edit"></i> Chỉnh Sửa Lớp</button>
+                    <button class="btn secondary" id="editClassBtn"><i class="fas fa-edit"></i> Chỉnh Sửa thông tin Lớp</button>
                     <button class="btn danger" id="deleteClassBtn"><i class="fas fa-trash"></i> Xóa Lớp</button>
                 </div>
             </div>
@@ -94,7 +94,7 @@
                     </div>
                     <div class="stat-card">
                         <i class="fas fa-trophy"></i>
-                        <h3>Thành tích</h3>
+                        <h3>Tổng thành tích</h3>
                         <p class="stat-value">0</p>
                     </div>
                 </div>
@@ -118,7 +118,7 @@
                 <div class="section-header">
                     <h2>Danh Sách Học Sinh</h2>
                     <div class="search-box">
-                        <input type="text" placeholder="Tìm kiếm học sinh...">
+                        <input type="text" id="studentSearchInput" placeholder="Tìm kiếm học sinh...">
                         <i class="fas fa-search"></i>
                     </div>
                 </div>
@@ -126,7 +126,7 @@
                     <table>
                         <thead>
                             <tr>
-                                <th>Họ và Tên</th>
+                                <th>Tên hiển thị</th>
                                 <th>Tiến Độ</th>
                                 <th>Điểm TB</th>
                                 <th>Thành Tích</th>
@@ -157,7 +157,7 @@
                             <div class="stat-item">
                                 <span class="stat-label">Tiến độ chung</span>
                                 <div class="progress-bar">
-                                    <div class="progress" style="width: 65%"></div>
+                                    <div class="progress" style="width: 0%"></div>
                                 </div>
                                 <span class="stat-value">0%</span>
                             </div>
@@ -225,7 +225,22 @@
             </form>
         </div>
     </div>
-
+    <!-- Modal Chỉnh sửa tên hiển thị của học sinh-->
+    <div id="editStudentDisplayNameModal" class="modal">
+        <div class="modal-content">
+            <h2>Chỉnh Sửa Tên Hiển Thị</h2>
+            <form id="editStudentDisplayNameForm">
+                <div class="form-group">
+                    <label for="newDisplayName">Tên Hiển Thị Mới</label>
+                    <input type="text" id="newDisplayName" required>
+                </div>
+                <div class="form-actions">
+                    <button type="button" class="btn secondary" id="cancelEditStudentDisplayName">Hủy</button>
+                    <button type="submit" class="btn primary">Lưu Thay Đổi</button>
+                </div>
+            </form>
+        </div>
+    </div>
     <!-- Modal Chi Tiết Học Sinh -->
     <div id="studentDetailModal" class="modal">
         <div class="modal-content student-detail-modal">
@@ -234,10 +249,16 @@
                 <button class="close-modal">&times;</button>
             </div>
             <div class="student-detail-content">
-                <div class="student-profile">
-                    <div class="student-info">
-                        <h3 id="detailStudentName">Nguyễn Văn A</h3>
-                        <p>Lớp 1A</p>
+                <div class="student-profile-compact">
+                    <div class="student-basic-info">
+                        <div class="student-name-email">
+                            <span id="detailStudentName" class="student-name">Test User</span>
+                            <span id="detailStudentEmail" class="student-email"><i class="fas fa-envelope"></i> test123@gmail.com</span>
+                        </div>
+                        <div class="student-contact">
+                            <span><i class="fas fa-phone"></i> <span id="detailStudentPhone">0123456789</span></span>
+                            <span><i class="fas fa-map-marker-alt"></i> <span id="detailStudentAddress">123 Test Street</span></span>
+                        </div>
                     </div>
                 </div>
                 
@@ -246,118 +267,50 @@
                     <button class="tab-btn" data-tab="activities">Hoạt Động</button>
                     <button class="tab-btn" data-tab="achievements">Thành Tích</button>
                 </div>
-
-                <div class="tab-content">
-                    <!-- Tab Tiến Độ Học Tập -->
+                <div class="tab-content" style="display: block;">
                     <div id="progress" class="tab-pane active">
                         <div class="progress-overview">
                             <div class="progress-card">
                                 <h4>Tiến Độ Chung</h4>
-                                <div class="progress-bar">
-                                    <div class="progress" style="width: 75%"></div>
-                                </div>
-                                <p>75% hoàn thành</p>
-                            </div>
-                            <div class="progress-card">
-                                <h4>Thời Gian Học</h4>
-                                <p class="stat-value">45 giờ</p>
-                            </div>
-                            <div class="progress-card">
-                                <h4>Điểm Trung Bình</h4>
-                                <p class="stat-value">8.5</p>
-                            </div>
-                        </div>
-
-                        <div class="subject-progress">
-                            <h4>Tiến Độ Theo Môn</h4>
-                            <div class="subject-list">
-                                <div class="subject-item">
-                                    <div class="subject-info">
-                                        <h5>Toán</h5>
-                                        <div class="progress-bar">
-                                            <div class="progress" style="width: 85%"></div>
-                                        </div>
-                                    </div>
-                                    <span>85%</span>
-                                </div>
-                                <div class="subject-item">
-                                    <div class="subject-info">
-                                        <h5>Tiếng Việt</h5>
-                                        <div class="progress-bar">
-                                            <div class="progress" style="width: 70%"></div>
-                                        </div>
-                                    </div>
-                                    <span>70%</span>
-                                </div>
-                                <div class="subject-item">
-                                    <div class="subject-info">
-                                        <h5>Tiếng Anh</h5>
-                                        <div class="progress-bar">
-                                            <div class="progress" style="width: 65%"></div>
-                                        </div>
-                                    </div>
-                                    <span>65%</span>
-                                </div>
+                                <div class="progress-tree"></div>
                             </div>
                         </div>
                     </div>
-
-                    <!-- Tab Hoạt Động -->
                     <div id="activities" class="tab-pane">
                         <div class="activity-filters">
-                            <select id="activityType">
-                                <option value="all">Tất cả hoạt động</option>
-                                <option value="game">Trò chơi</option>
-                                <option value="quiz">Bài kiểm tra</option>
-                                <option value="lesson">Bài học</option>
+                            <select id="activityTimeFilter">
+                                <option>Tất cả thời gian</option>
+                                <option>7 ngày qua</option>
+                                <option>30 ngày qua</option>
                             </select>
-                            <select id="activityTime">
-                                <option value="week">Tuần này</option>
-                                <option value="month">Tháng này</option>
-                                <option value="all">Tất cả</option>
+                            <select id="activityTypeFilter">
+                                <option>Tất cả hoạt động</option>
+                                <option>Học tập</option>
+                                <option>Luyện tập</option>
                             </select>
                         </div>
-                        <div class="activity-list">
-                            <div class="activity-item">
-                                <div class="activity-icon">
-                                    <i class="fas fa-gamepad"></i>
-                                </div>
-                                <div class="activity-info">
-                                    <h5>Hoàn thành trò chơi Toán</h5>
-                                    <p>Điểm số: 9/10</p>
-                                    <span class="activity-time">2 giờ trước</span>
-                                </div>
-                            </div>
-                            <div class="activity-item">
-                                <div class="activity-icon">
-                                    <i class="fas fa-book"></i>
-                                </div>
-                                <div class="activity-info">
-                                    <h5>Hoàn thành bài học Tiếng Việt</h5>
-                                    <p>Thời gian: 30 phút</p>
-                                    <span class="activity-time">5 giờ trước</span>
-                                </div>
-                            </div>
+                        <div class="activity-summary">
+                            <span><strong>5</strong> phút bài tập</span>
+                            <span style="margin: 0 10px;">|</span>
+                            <span><strong>10</strong> tổng số phút học</span>
+                        </div>
+                        <div class="activity-table-wrapper">    
+                            <table class="activity-table">
+                                <thead>
+                                    <tr>
+                                        <th>HOẠT ĐỘNG</th>
+                                        <th>NGÀY</th>
+                                        <th>SỐ CÂU ĐÚNG/TỔNG SỐ CÂU</th>
+                                        <th>THỜI GIAN (PHÚT)</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                </tbody>
+                            </table>
                         </div>
                     </div>
-
-                    <!-- Tab Thành Tích -->
                     <div id="achievements" class="tab-pane">
                         <div class="achievements-grid">
-                            <div class="achievement-card">
-                                <div class="achievement-icon">
-                                    <i class="fas fa-star"></i>
-                                </div>
-                                <h5>Học Sinh Xuất Sắc</h5>
-                                <p>Đạt điểm cao trong 5 bài kiểm tra liên tiếp</p>
-                            </div>
-                            <div class="achievement-card">
-                                <div class="achievement-icon">
-                                    <i class="fas fa-trophy"></i>
-                                </div>
-                                <h5>Chuyên Gia Toán Học</h5>
-                                <p>Hoàn thành 10 bài tập Toán với điểm tối đa</p>
-                            </div>
                         </div>
                     </div>
                 </div>

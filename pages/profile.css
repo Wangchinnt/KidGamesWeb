@@ -1,128 +1,131 @@
-/* Profile Container */
-.profile-container {
-    padding: 40px 20px;
-    min-height: calc(100vh - 80px);
-    background: #f0f4fa;
+body {
+  background: linear-gradient(135deg, #e0e7ff 0%, #fff 100%);
+  font-family: 'Segoe UI', Arial, sans-serif;
+}
+
+.profile-page {
+  min-height: 100vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
 }
 
 .profile-card {
-    max-width: 800px;
-    margin: 0 auto;
-    background: #fff;
-    border-radius: 12px;
-    box-shadow: 0 2px 16px rgba(0,0,0,0.08);
-    overflow: hidden;
+  background: #fff;
+  border-radius: 18px;
+  box-shadow: 0 8px 32px rgba(60,60,120,0.10);
+  max-width: 480px;
+  width: 100%;
+  padding-bottom: 32px;
+  margin: 32px 0;
+  overflow: hidden;
 }
 
 .profile-header {
-    padding: 32px;
-    text-align: center;
-    background: #f8f9fa;
-    border-bottom: 1px solid #eee;
+  display: flex;
+  align-items: center;
+  padding: 32px 32px 16px 32px;
+  background: #f3f6fd;
+  border-bottom: 1px solid #f0f0f0;
+}
+
+.avatar {
+  width: 72px;
+  height: 72px;
+  border-radius: 50%;
+  background: #e0e7ff;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  overflow: hidden;
+  margin-right: 24px;
+  border: 2px solid #6366f1;
+}
+.avatar img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
 }
 
 .profile-info h2 {
-    margin: 0 0 8px;
-    color: #333;
-    font-size: 24px;
+  margin: 0 0 6px 0;
+  font-size: 24px;
+  color: #222;
+  font-weight: 600;
+}
+.profile-meta {
+  color: #6366f1;
+  font-size: 15px;
+  font-weight: 500;
 }
 
-.profile-info p {
-    margin: 4px 0;
-    color: #666;
+.profile-form {
+  padding: 24px 32px 0 32px;
 }
 
-.profile-content {
-    padding: 32px;
+.form-row {
+  display: flex;
+  gap: 18px;
+  margin-bottom: 14px;
 }
-
 .form-group {
-    margin-bottom: 24px;
+  flex: 1;
+  display: flex;
+  flex-direction: column;
 }
-
 .form-group label {
-    display: block;
-    margin-bottom: 8px;
-    color: #333;
-    font-weight: 500;
+  font-weight: 500;
+  margin-bottom: 5px;
+  color: #333;
 }
-
-.form-group label i {
-    margin-right: 8px;
-    color: #2d8cf0;
-}
-
 .form-group input,
 .form-group select {
-    width: 100%;
-    padding: 10px 12px;
-    border: 1px solid #ddd;
-    border-radius: 6px;
-    font-size: 15px;
-    transition: border-color 0.3s;
+  padding: 9px 12px;
+  border: 1px solid #ddd;
+  border-radius: 6px;
+  font-size: 15px;
+  background: #f8fafc;
+  transition: border-color 0.3s;
 }
-
+.form-group input[readonly] {
+  background: #f1f5f9;
+  color: #888;
+  cursor: not-allowed;
+}
 .form-group input:focus,
 .form-group select:focus {
-    border-color: #2d8cf0;
-    outline: none;
+  border-color: #6366f1;
+  outline: none;
 }
-
-.form-group input[readonly] {
-    background: #f8f9fa;
-    cursor: not-allowed;
-}
-
 .form-actions {
-    display: flex;
-    gap: 12px;
-    margin-top: 32px;
+  display: flex;
+  justify-content: flex-end;
+  margin-top: 18px;
 }
-
-.save-btn,
-.cancel-btn {
-    padding: 12px 24px;
-    border-radius: 6px;
-    font-size: 15px;
-    cursor: pointer;
-    transition: all 0.3s;
-}
-
 .save-btn {
-    background: #2d8cf0;
-    color: #fff;
-    border: none;
+  background: #6366f1;
+  color: #fff;
+  border: none;
+  padding: 11px 32px;
+  border-radius: 6px;
+  font-size: 16px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: background 0.2s;
 }
-
 .save-btn:hover {
-    background: #2b7ad9;
+  background: #4f46e5;
 }
-
-.cancel-btn {
-    background: #fff;
-    color: #666;
-    border: 1px solid #ddd;
+@media (max-width: 600px) {
+  .profile-card {
+    max-width: 98vw;
+    padding-bottom: 12px;
+  }
+  .profile-header, .profile-form {
+    padding: 16px;
+  }
+  .form-row {
+    flex-direction: column;
+    gap: 0;
+  }
 }
-
-.cancel-btn:hover {
-    background: #f8f9fa;
-}
-
-@media (max-width: 768px) {
-    .profile-header {
-        padding: 24px;
-    }
-    
-    .profile-content {
-        padding: 24px;
-    }
-    
-    .form-actions {
-        flex-direction: column;
-    }
-    
-    .save-btn,
-    .cancel-btn {
-        width: 100%;
-    }
-} 

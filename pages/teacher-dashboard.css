@@ -452,13 +452,8 @@
     background: #e8f4ff;
 }
 
-.tab-content {
-    display: none;
-}
-
-.tab-content.active {
-    display: block;
-}
+.tab-content { display: none; }
+.tab-content.active { display: block; }
 
 .mark-all-read {
     background: none;

@@ -16,56 +16,74 @@
                 <span class="logo-text">KidGames: Trò chơi giáo dục dành cho học sinh lớp 1</span>
             </div>
             <div class="nav-links">
-                <a href="student-dashboard.html">Bảng điều khiển</a>
+                <a href="#" id="dashboard-link">Bảng điều khiển</a>
                 <a href="#" class="profile-btn"><i class="fas fa-user"></i></a>
             </div>
         </nav>
     </header>
 
-    <main class="profile-container">
+    <main class="profile-page">
         <div class="profile-card">
             <div class="profile-header">
                 <div class="profile-info">
-                    <h2 id="user-name">Nguyễn Văn A</h2>
-                    <p id="user-role">Học sinh</p>
-                    <p id="user-class">Lớp 1A</p>
+                    <h2 id="user-name">Tên người dùng</h2>
+                    <div class="profile-meta">
+                        <span id="user-role">Vai trò</span> · <span id="user-class">Lớp</span>
+                    </div>
                 </div>
             </div>
-
-            <div class="profile-content">
-                <form id="profile-form">
+            <form id="profile-form" class="profile-form">
+                <div class="form-row">
                     <div class="form-group">
-                        <label><i class="fas fa-user"></i> Họ và tên</label>
-                        <input type="text" id="fullname" name="fullname" value="Nguyễn Văn A">
+                        <label>Tên đăng nhập</label>
+                        <input type="text" id="user_name" readonly>
                     </div>
                     <div class="form-group">
-                        <label><i class="fas fa-envelope"></i> Email</label>
-                        <input type="email" id="email" name="email" value="nguyenvana@example.com" readonly>
+                        <label>Email</label>
+                        <input type="email" id="email" readonly>
+                    </div>
+                </div>
+                <div class="form-row">
+                    <div class="form-group">
+                        <label>Họ tên</label>
+                        <input type="text" id="fullname" required>
                     </div>
                     <div class="form-group">
-                        <label><i class="fas fa-phone"></i> Số điện thoại</label>
-                        <input type="tel" id="phone" name="phone" value="0123456789">
+                        <label>Ngày sinh</label>
+                        <input type="date" id="birthday">
+                    </div>
+                </div>
+                <div class="form-row">
+                    <div class="form-group">
+                        <label>Số điện thoại</label>
+                        <input type="text" id="phone">
                     </div>
                     <div class="form-group">
-                        <label><i class="fas fa-calendar"></i> Ngày sinh</label>
-                        <input type="date" id="birthday" name="birthday" value="2017-01-01">
+                        <label>Địa chỉ</label>
+                        <input type="text" id="address">
                     </div>
+                </div>
+                <div class="form-row">
                     <div class="form-group">
-                        <label><i class="fas fa-venus-mars"></i> Giới tính</label>
-                        <select id="gender" name="gender">
-                            <option value="male">Nam</option>
-                            <option value="female">Nữ</option>
+                        <label>Giới tính</label>
+                        <select id="gender">
+                            <option value="0">Nam</option>
+                            <option value="1">Nữ</option>
+                            <option value="2">Khác</option>
                         </select>
                     </div>
-                    <div class="form-actions">
-                        <button type="submit" class="save-btn">Lưu thay đổi</button>
-                        <button type="button" class="cancel-btn" onclick="window.location.href='student-dashboard.html'">Hủy</button>
-                    </div>
-                </form>
-            </div>
+                    <div class="form-group"></div>
+                </div>
+                <div class="form-actions">
+                    <button type="submit" class="save-btn">Lưu thay đổi</button>
+                </div>
+            </form>
         </div>
     </main>
-
+    <script src="https://www.gstatic.com/firebasejs/11.6.1/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/11.6.1/firebase-auth-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore-compat.js"></script>
+    <script src="../../firebase-config.js"></script>
     <script src="profile.js"></script>
 </body>
 </html> 

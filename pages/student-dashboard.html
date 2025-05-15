@@ -20,7 +20,7 @@
                 <div class="notification-dropdown">
                     <a href="#" class="notification-btn">
                         <i class="fas fa-bell"></i>
-                        <span class="notification-badge">3</span>
+                        <span class="notification-badge">0</span>
                     </a>
                     <div class="notification-content">
                         <div class="notification-header">
@@ -35,7 +35,7 @@
                 <div class="profile-dropdown">
                     <a href="#" class="profile-btn"><i class="fas fa-user"></i></a>
                     <div class="dropdown-content">
-                        <a href="profile.html"><i class="fas fa-user-circle"></i> Thông tin cá nhân</a>
+                        <a href="#" id="view-profile-btn"><i class="fas fa-user-circle"></i> Thông tin cá nhân</a>
                         <a href="#" id="logout-btn"><i class="fas fa-sign-out-alt"></i> Đăng xuất</a>
                     </div>
                 </div>
@@ -47,18 +47,19 @@
         <div class="dashboard-sidebar">
             <div class="user-info">
                 <h2>
-                    Nguyễn Văn A
-                    <span class="level-badge"><i class="fas fa-level-up-alt"></i> Cấp 13</span>
+                    <span id="user-name"></span>
+                    <span id="user-role"> (Học sinh) </span>
+                    <span class="level-badge"><i class="fas fa-level-up-alt"></i> Cấp  <span id="user-level"></span></span>
                 </h2>
-                <p>Lớp 1A</p>
+                <p id="user-class"></p>
                 <div class="user-stats">
                     <div class="user-stat">
                         <i class="fas fa-fire"></i>
-                        <span><strong>7</strong> ngày</span>
+                        <span><strong id="user-streak"></strong></span>
                     </div>
                     <div class="user-stat">
                         <i class="fas fa-gem"></i>
-                        <span><strong>120</strong></span>
+                        <span><strong id="user-diamond"></strong></span>
                     </div>
                 </div>
             </div>
@@ -78,28 +79,28 @@
                     <div class="overview-card" data-section="achievements">
                         <div class="overview-icon"><i class="fas fa-trophy"></i></div>
                         <div>
-                            <div class="overview-value">4</div>
+                            <div class="overview-value"><span id="user-achievements"></span></div>
                             <div class="overview-label">Thành tích</div>
                         </div>
                     </div>
                     <div class="overview-card" data-section="progress">
                         <div class="overview-icon"><i class="fas fa-chart-line"></i></div>
                         <div>
-                            <div class="overview-value">65%</div>
+                            <div class="overview-value"><span id="user-progress"></span></div>
                             <div class="overview-label">Tiến độ học tập</div>
                         </div>
                     </div>
                     <div class="overview-card" data-section="leaderboard">
                         <div class="overview-icon"><i class="fas fa-medal"></i></div>
                         <div>
-                            <div class="overview-value">#4</div>
+                            <div class="overview-value"><span id="user-rank"></span></div>
                             <div class="overview-label">Xếp hạng</div>
                         </div>
                     </div>
-                    <div class="overview-card" data-section="activity">
+                    <div class="overview-card" data-section="learningTime">
                         <div class="overview-icon"><i class="fas fa-clock"></i></div>
                         <div>
-                            <div class="overview-value">120</div>
+                            <div class="overview-value"><span id="user-totalLearningTime"></span></div>
                             <div class="overview-label">Phút học</div>
                         </div>
                     </div>
@@ -123,33 +124,14 @@
             <div class="achievements-section">
                 <h2>Thành tích của em</h2>
                 <div class="achievements-grid">
-                    <div class="achievement-card">
-                        <i class="fas fa-star"></i>
-                        <h3>Học Sinh Xuất Sắc</h3>
-                        <p>Hoàn thành 10 bài học</p>
-                        <span class="achievement-date">Đạt được: 15/03/2024</span>
-                    </div>
-                    <div class="achievement-card">
-                        <i class="fas fa-trophy"></i>
-                        <h3>Nhà Toán Học</h3>
-                        <p>Giải đúng 50 bài toán</p>
-                        <span class="achievement-date">Đạt được: 10/03/2024</span>
-                    </div>
-                    <div class="achievement-card">
-                        <i class="fas fa-medal"></i>
-                        <h3>Siêu Đọc Giả</h3>
-                        <p>Đọc xong 20 truyện</p>
-                        <span class="achievement-date">Đạt được: 05/03/2024</span>
-                    </div>
-                    <div class="achievement-card">
-                        <i class="fas fa-award"></i>
-                        <h3>Chăm Chỉ</h3>
-                        <p>Học liên tục 7 ngày</p>
-                        <span class="achievement-date">Đạt được: 01/03/2024</span>
-                    </div>
                 </div>
             </div>
-
+            <div class="my-class-section">
+                <h2>Lớp học của tôi</h2>
+                <div id="my-class-info">
+                    <!-- Thông tin lớp sẽ được render ở đây -->
+                </div>
+            </div>
             <!-- Tabs -->
             <div class="dashboard-tabs">
                 <button class="tab-btn active" data-tab="progress">Tiến độ học tập</button>
@@ -171,14 +153,9 @@
                     <div class="activity-header">
                         <div class="activity-filters">
                             <select>
+                                <option>Tất cả thời gian</option>
                                 <option>7 ngày qua</option>
                                 <option>30 ngày qua</option>
-                                <option>Tất cả thời gian</option>
-                            </select>
-                            <select>
-                                <option>Tất cả môn học</option>
-                                <option>Toán</option>
-                                <option>Tiếng Việt</option>
                             </select>
                             <select>
                                 <option>Tất cả hoạt động</option>
@@ -192,56 +169,28 @@
                             <span><strong>10</strong> tổng số phút học</span>
                         </div>
                     </div>
-                    <div class="activity-table-wrapper">
+                    <div class="activity-table-wrapper">    
                         <table class="activity-table">
                             <thead>
                                 <tr>
                                     <th>HOẠT ĐỘNG</th>
                                     <th>NGÀY</th>
-                                    <th>CẤP ĐỘ</th>
-                                    <th>THAY ĐỔI</th>
                                     <th>SỐ CÂU ĐÚNG/TỔNG SỐ CÂU</th>
+                                    <th>LỖI SAI</th>
                                     <th>THỜI GIAN (PHÚT)</th>
                                 </tr>
                             </thead>
                             <tbody>
-                                <tr>
-                                    <td>
-                                        <strong>Học tập: Chương 1. Bài 1. Phương hướng </strong><br>
-                                        <span class="activity-desc">Dạy trẻ cách xác dịnh phương hướng</span>
-                                    </td>
-                                    <td>Thg 05 09, 2025 vào lúc 15:46</td>
-                                    <td><a href="#">Chi tiết</a></td>
-                                    <td>-7</td>
-                                    <td>7/7</td>
-                                    <td>10</td>
-                                </tr>
-                                <tr>
-                                    <td>
-                                        <strong>Luyên tập: Mini-game đếm</strong><br>
-                                        <span class="activity-desc">Luyện tập đếm số</span>
-                                    </td>
-                                    <td>Thg 05 09, 2025 vào lúc 15:46</td>
-                                    <td><a href="#">Chi tiết</a></td>
-                                    <td>Không có</td>
-                                    <td>7/10</td>
-                                    <td>5</td>
-                                </tr>
                             </tbody>
                         </table>
                     </div>
                 </div>
             </div>
 
-            <div class="leaderboard-section">
+            <div class="leaderboard-section" style="display: none;">
                 <h2>Bảng xếp hạng</h2>
                 <div class="leaderboard-header">
                     <div class="leaderboard-filters">
-                        <select>
-                            <option>Lớp 1A</option>
-                            <option>Lớp 1B</option>
-                            <option>Lớp 1C</option>
-                        </select>
                         <select>
                             <option>Sắp xếp theo thời gian học</option>
                             <option>Sắp xếp theo kim cương</option>
@@ -261,78 +210,7 @@
                             </tr>
                         </thead>
                         <tbody>
-                            <tr class="rank-1">
-                                <td>1</td>
-                                <td>Hoàng Xuân Huy</td>
-                                <td>Lớp 1A</td>
-                                <td>Cấp 13</td>
-                                <td>15 giờ</td>
-                                <td>130</td>
-                            </tr>
-                            <tr class="rank-2">
-                                <td>2</td>
-                                <td>User test 1</td>
-                                <td>Lớp 1A</td>
-                                <td>Cấp 3</td>
-                                <td>0.4 giờ</td>
-                                <td>30</td>
-                            </tr>
-                            <tr class="rank-3">
-                                <td>3</td>
-                                <td>User test 2</td>
-                                <td>Lớp 1A</td>
-                                <td>Cấp 3</td>
-                                <td>0.4 giờ</td>
-                                <td>20</td>
-                            </tr>
-                            <tr>
-                                <td>4</td>
-                                <td>Bạn</td>
-                                <td>Lớp 1A</td>
-                                <td>Cấp 4</td>
-                                <td>0.2 giờ</td>
-                                <td>17</td>
-                            </tr>
-                            <tr>
-                                <td>5</td>
-                                <td>Trần Văn Luyện</td>
-                                <td>Lớp 1A</td>
-                                <td>Cấp 4</td>
-                                <td>0.2 giờ</td>
-                                <td>15</td>
-                            </tr>
-                            <tr>
-                                <td>6</td>
-                                <td>User test 3</td>
-                                <td>Lớp 1A</td>
-                                <td>Cấp 1</td>
-                                <td>0.1 giờ</td>
-                                <td>15</td>
-                            </tr>
-                            <tr>
-                                <td>7</td>
-                                <td>Tạ Quang Chiến</td>
-                                <td>Lớp 1A</td>
-                                <td>Cấp 1</td>
-                                <td>0.1 giờ</td>
-                                <td>10</td>
-                            </tr>
-                            <tr>
-                                <td>8</td>
-                                <td>Lê Quang Tuấn</td>
-                                <td>Lớp 1A</td>
-                                <td>Cấp 1</td>
-                                <td>0.1 giờ</td>
-                                <td>10</td>
-                            </tr>
-                            <tr>
-                                <td>9</td>
-                                <td>Trần Đức Bo</td>
-                                <td>Lớp 1A</td>
-                                <td>Cấp 1</td>
-                                <td>0.1 giờ</td>
-                                <td>10</td>
-                            </tr>
+                            <!-- Danh sách xếp hạng sẽ được thêm vào đây bằng JavaScript -->
                         </tbody>
                     </table>
                 </div>
@@ -427,8 +305,8 @@
                         <table class="parents-table">
                             <thead>
                                 <tr>
+                                    <th>Tên phụ huynh</th>
                                     <th>Email</th>
-                                    <th>Trạng thái</th>
                                     <th>Thao tác</th>
                                 </tr>
                             </thead>
@@ -441,7 +319,10 @@
             </div>
         </div>
     </div>
-
+    <script src="https://www.gstatic.com/firebasejs/11.6.1/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/11.6.1/firebase-auth-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore-compat.js"></script>
+    <script src="../../firebase-config.js"></script>
     <script src="student-dashboard.js"></script>
 </body>
 </html> 

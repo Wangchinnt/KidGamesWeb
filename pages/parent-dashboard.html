@@ -20,7 +20,7 @@
                 <div class="notification-dropdown">
                     <a href="#" class="notification-btn">
                         <i class="fas fa-bell"></i>
-                        <span class="notification-badge">3</span>
+                        <span class="notification-badge">0</span>
                     </a>
                     <div class="notification-content">
                         <div class="notification-header">
@@ -35,7 +35,7 @@
                 <div class="profile-dropdown">
                     <a href="#" class="profile-btn"><i class="fas fa-user"></i></a>
                     <div class="dropdown-content">
-                        <a href="profile.html"><i class="fas fa-user-circle"></i> Thông tin cá nhân</a>
+                        <a href="#" id="view-profile-btn"><i class="fas fa-user-circle"></i> Thông tin cá nhân</a>
                         <a href="#" id="logout-btn"><i class="fas fa-sign-out-alt"></i> Đăng xuất</a>
                     </div>
                 </div>
@@ -46,11 +46,12 @@
     <main class="dashboard-container">
         <div class="dashboard-sidebar">
             <div class="user-info">
-                <h2>Anh Nguyễn Văn A</h2>
+                <h2>Phụ huynh</h2>
                 <p>Phụ huynh</p>
             </div>
             <nav class="sidebar-nav">
                 <a href="#" class="active" data-section="overview"><i class="fas fa-home"></i> Tổng Quan</a>
+                <a href="#" data-section="children"><i class="fas fa-child"></i> Quản lý con</a>
                 <a href="#" data-section="settings"><i class="fas fa-cog"></i> Cài đặt</a>
             </nav>
         </div>
@@ -78,23 +79,32 @@
                     <div class="stat-card">
                         <i class="fas fa-child"></i>
                         <h3>Số con đã liên kết</h3>
-                        <p class="stat-value">2</p>
+                        <p class="stat-value" data-stat="linkedChildren">0</p>
                     </div>
                     <div class="stat-card">
                         <i class="fas fa-graduation-cap"></i>
                         <h3>Lớp học đã ghi danh</h3>
-                        <p class="stat-value">3</p>
+                        <p class="stat-value" data-stat="enrolledClasses">0</p>
                     </div>
                     <div class="stat-card">
                         <i class="fas fa-star"></i>
                         <h3>Thành tích đạt được</h3>
-                        <p class="stat-value">15</p>
+                        <p class="stat-value" data-stat="achievements">0</p>
                     </div>
                 </div>
 
-                <!-- Thêm phần quản lý con cái vào đây -->
                 <div class="children-section">
                     <h2>Con cái của tôi</h2>
+                    <div class="children-grid">
+                        <!-- Danh sách con sẽ được thêm vào đây bằng JavaScript -->
+                    </div>
+                </div>
+            </section>
+
+            <!-- Section: Quản lý con -->
+            <section id="children" class="dashboard-section">
+                <h2>Quản lý con</h2>
+                <div class="children-management">
                     <div class="children-grid">
                         <!-- Danh sách con sẽ được thêm vào đây bằng JavaScript -->
                     </div>
@@ -143,59 +153,66 @@
         </div>
     </main>
 
-    <!-- Modal: Liên kết với con -->
+    <!-- Modal liên kết với con -->
     <div id="link-child-modal" class="modal">
         <div class="modal-content">
-            <div class="modal-header">
-                <h2>Liên kết với con</h2>
-                <button class="close-modal">&times;</button>
-            </div>
-            <div class="modal-body">
-                <form id="link-child-form">
-                    <div class="form-group">
-                        <label for="child-email">Email tài khoản học sinh</label>
-                        <input type="email" id="child-email" required placeholder="Nhập email của con">
-                    </div>
-                    <div id="link-child-error" class="form-error"></div>
-                    <div id="linked-child-info" style="display: none;">
-                        <p><strong>Mã học sinh:</strong> <span id="linked-child-id"></span></p>
-                        <button type="button" id="confirm-link-btn" class="btn-primary">Xác nhận liên kết</button>
-                    </div>
-                    <div class="form-actions">
-                        <button type="submit" class="btn-primary">Tìm kiếm</button>
-                    </div>
-                </form>
-            </div>
+            <span class="close-modal">&times;</span>
+            <h2>Liên kết với con</h2>
+            <form id="link-child-form">
+                <div class="form-group">
+                    <label for="child-email">Email của con:</label>
+                    <input type="email" id="child-email" required>
+                </div>
+                <button type="submit" class="btn-primary">Liên kết</button>
+            </form>
         </div>
     </div>
 
-    <!-- Modal: Ghi danh cho con -->
+    <!-- Modal ghi danh cho con -->
     <div id="enroll-child-modal" class="modal">
         <div class="modal-content">
-            <div class="modal-header">
-                <h2>Ghi danh cho con</h2>
-                <button class="close-modal">&times;</button>
-            </div>
-            <div class="modal-body">
-                <form id="enroll-child-form">
-                    <div class="form-group">
-                        <label for="enroll-child-select">Chọn học sinh</label>
-                        <select id="enroll-child-select" required>
-                            <option value="">-- Chọn học sinh --</option>
-                        </select>
-                    </div>
-                    <div class="form-group">
-                        <label for="class-code">Mã lớp học</label>
-                        <input type="text" id="class-code" required placeholder="Nhập mã lớp học">
-                    </div>
-                    <div class="form-actions">
-                        <button type="submit" class="btn-primary">Ghi danh</button>
-                    </div>
-                </form>
-            </div>
+            <span class="close-modal">&times;</span>
+            <h2>Ghi danh cho con</h2>
+            <form id="enroll-child-form">
+                <div class="form-group">
+                    <label for="enroll-child-select">Chọn con:</label>
+                    <select id="enroll-child-select" required>
+                        <option value="">-- Chọn con --</option>
+                        <!-- Sẽ được điền động bằng JavaScript -->
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label for="class-code">Mã lớp:</label>
+                    <input type="text" id="class-code" required>
+                </div>
+                <button type="submit" class="btn-primary">Ghi danh</button>
+            </form>
         </div>
     </div>
 
+    <!-- Modal xem tiến độ học sinh -->
+    <div id="child-progress-modal" class="modal">
+        <div class="modal-content">
+            <button id="close-progress-modal" class="close-modal">&times;</button>
+            <h2 id="progress-modal-title"></h2>
+            
+            <div class="progress-modal-tabs">
+                <button class="tab-btn active" data-tab="progress">Tiến độ học tập</button>
+                <button class="tab-btn" data-tab="activity">Nhật ký hoạt động</button>
+                <button class="tab-btn" data-tab="achievements">Thành tích</button>
+            </div>
+
+            <div class="tab-content tab-progress active"></div>
+            <div class="tab-content tab-activity"></div>
+            <div class="tab-content tab-achievements"></div>
+        </div>
+    </div>
+
+    <!-- Firebase Scripts -->
+    <script src="https://www.gstatic.com/firebasejs/11.6.1/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/11.6.1/firebase-auth-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore-compat.js"></script>
+    <script src="../../firebase-config.js"></script>
     <script src="parent-dashboard.js"></script>
 </body>
 </html>

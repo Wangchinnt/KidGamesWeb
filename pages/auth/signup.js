@@ -41,6 +41,7 @@ async function handleSignupSubmit(e) {
     const validationError = validateSignup({ username, fullname, birthdate, gender, role, email, password });
     if (validationError) {
         errorMessage.textContent = validationError;
+        errorMessage.style.display = "block";
         return;
     }
 
@@ -55,80 +56,21 @@ async function handleSignupSubmit(e) {
         return;
     }
 
+    // Kiểm tra username đã tồn tại chưa
+    if (await isUsernameTaken(username)) {
+        errorMessage.textContent = "Tên đăng nhập đã được sử dụng. Vui lòng chọn tên khác.";
+        errorMessage.style.display = "block";
+        return;
+    }
+
     try {
         // 1. Tạo tài khoản Firebase
         const userCredential = await firebase.auth().createUserWithEmailAndPassword(email, password);
         const user = userCredential.user;
         const userId = user.uid;
-        const now = new Date().toISOString();
 
         // 2. Lưu vào bảng users
-        await firebase.firestore().collection('users').doc(userId).set({
-            user_name: username,
-            full_name: fullname,
-            email: email,
-            DOB: birthdate,
-            phone: "", // hoặc lấy từ form nếu có
-            address: "",
-            gender: gender === "male" ? 1 : 0,
-            role: role === "teacher" ? 2 : role === "parent" ? 1 : 0, // 0: student, 1: parent, 2: teacher
-            created_at: now,
-            last_login: now
-        });
-
-        // 3. Lưu notification_preferences trong user_id (field notification_preferences)
-        await firebase.firestore().collection('users').doc(userId).update({
-            notification_preferences: {
-                notifications: [],
-                progress_updates: true,
-                achievements: true,
-                class_announcements: true
-            }
-        });
-
-        // 4. Lưu game_settings trong user_id (field game_settings)
-        await firebase.firestore().collection('users').doc(userId).update({
-            game_settings: {
-                difficulty: "normal",
-                sound_enabled: true,
-                music_enabled: true,
-                language: "vi",
-                notifications_enabled: true
-            }
-        });
-
-        // 5. Lưu role-specific trong user_id
-        if (role === "teacher") {
-            // Tạo lớp học mẫu
-            // Lưu teacher_role là một field map, có listOfClasses là mảng
-            await firebase.firestore().collection('users').doc(userId).update({
-                teacher_role: {
-                    listOfClasses: []
-                }
-            });
-        } else if (role === "parent") {
-            await firebase.firestore().collection('users').doc(userId).update({
-                parent_role: {
-                    listOfChildren: []
-                }
-            });
-        } else if (role === "student") {
-            await firebase.firestore().collection('users').doc(userId).update({
-                student_role: {
-                    parent_id: "",
-                    class_id: "",
-                    level: 1,
-                    exp_points: 0,
-                    diamonds: 0,
-                    total_learning_time: 0,
-                    total_practice_time: 0,
-                    learning_progress: [],
-                    activity_logs: [],
-                    toys: [],
-                    badges: []
-                }
-            });
-        }
+        await createUserInFirestore({ userId, username, fullname, email, birthdate, gender, role });
 
         // Thành công
         const successMessage = document.getElementById('success-message');
@@ -138,11 +80,11 @@ async function handleSignupSubmit(e) {
         }
         setTimeout(() => {
             if (role === "teacher") {
-                window.location.href = '../teacher-dashboard.html';
+                window.location.href = '../teacher-dashboard.html?userId=' + userId;
             } else if (role === "parent") {
-                window.location.href = '../parent-dashboard.html';
+                window.location.href = '../parent-dashboard.html?userId=' + userId;
             } else {
-                window.location.href = '../student-dashboard.html';
+                window.location.href = '../student-dashboard.html?userId=' + userId;
             }
         }, 1500);
     } catch (error) {
@@ -169,6 +111,16 @@ function validateSignup({ username, fullname, birthdate, gender, role, email, pa
 function validateEmail(email) {
     // Regex đơn giản cho email
     return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email);
+}
+
+async function validateUsername(username) {
+    const userDoc = await firebase.firestore().collection('users').where('user_name', '==', username).get();
+    return userDoc.size === 0;
+}
+
+async function isUsernameTaken(username) {
+    const userDoc = await firebase.firestore().collection('users').where('user_name', '==', username).get();
+    return !userDoc.empty;
 }
 
 // Hàm chuyển đổi mã lỗi Firebase thành thông báo tiếng Việt
@@ -223,7 +175,17 @@ function showError(message) {
 }
 
 async function signupWithGoogle() {
-    const role = document.querySelector('input[name="role"]:checked')?.value;
+    const roleStr = document.querySelector('input[name="role"]:checked')?.value;
+    // Chuyển role về số
+    let role = 0;
+    if (roleStr === "teacher") role = 2;
+    else if (roleStr === "parent") role = 1;
+    // if roleStr is not selected, alert and return
+    if (!roleStr) {
+        alert("Vui lòng chọn vai trò.");
+        return;
+    }
+
     const googleProvider = new firebase.auth.GoogleAuthProvider();
     try {
         const result = await firebase.auth().signInWithPopup(googleProvider);
@@ -231,31 +193,219 @@ async function signupWithGoogle() {
         if (user) {
             // Kiểm tra xem user đã tồn tại trong Firestore chưa
             const userDoc = await firebase.firestore().collection('users').doc(user.uid).get();
+            let userRole = role;
             if (!userDoc.exists) {
                 // Tạo user mới với thông tin từ Google
-                await firebase.firestore().collection('users').doc(user.uid).set({
-                    user_name: user.displayName || "",
-                    full_name: user.displayName || "",
-                    email: user.email,
-                    role: role,
-                    created_at: new Date().toISOString(),
-                    last_login: new Date().toISOString()
-                });
+                await createUserInFirestore({ userId: user.uid, username: user.displayName || "", fullname: user.displayName || "", email: user.email, birthdate: "", gender: "", role: role });
+            } else {
+                // Nếu đã có user, lấy role từ Firestore
+                userRole = userDoc.data().role;
             }
             showSuccess("Đăng nhập bằng Google thành công! Đang chuyển hướng...");
             setTimeout(() => {
-                // Chuyển hướng theo role nếu muốn
-                if (role === "teacher") {
-                    window.location.href = '../teacher-dashboard.html';
-                } else if (role === "parent") {
-                    window.location.href = '../parent-dashboard.html';
+                if (userRole === 2) {
+                    window.location.href = '../teacher-dashboard.html?userId=' + user.uid;
+                } else if (userRole === 1) {
+                    window.location.href = '../parent-dashboard.html?userId=' + user.uid;
                 } else {
-                    window.location.href = '../student-dashboard.html';
+                    window.location.href = '../student-dashboard.html?userId=' + user.uid;
                 }
             }, 1200);
         }
     } catch (error) {
         showError("Đăng nhập bằng Google thất bại.");
+        console.error(error);
     }
 }
 
+function showSuccess(message) {
+    const successMessage = document.getElementById('success-message');
+    if (successMessage) {
+        successMessage.textContent = message;
+        successMessage.style.display = "block";
+    } else {
+        alert(message);
+    }
+}
+
+async function createUserInFirestore({ userId, username, fullname, email, birthdate, gender, role }) {
+    const now = new Date().toISOString();
+    // role: 0-student, 1-parent, 2-teacher
+    await firebase.firestore().collection('users').doc(userId).set({
+        user_name: username || "",
+        full_name: fullname || "",
+        email: email || "",
+        DOB: birthdate || "",
+        notifications: [],
+        phone: "",
+        address: "",
+        gender: typeof gender === "number" ? gender : (gender === "male" ? 0 : gender === "female" ? 1 : 2),
+        role: typeof role === "number" ? role : (role === "teacher" ? 2 : role === "parent" ? 1 : 0),
+        created_at: now,
+        last_login: now
+    });
+
+    // notification_preferences
+    await firebase.firestore().collection('users').doc(userId).update({
+        notification_preferences: {
+            notifications: true,
+            progress_updates: true,
+            achievements: true,
+            class_announcements: true
+        }
+    });
+
+    // game_settings
+    await firebase.firestore().collection('users').doc(userId).update({
+        game_settings: {
+            difficulty: "normal",
+            sound_enabled: true,
+            music_enabled: true,
+            language: "vi",
+            notifications_enabled: true
+        }
+    });
+
+    // role-specific
+    const userRole = typeof role === "number" ? role : (role === "teacher" ? 2 : role === "parent" ? 1 : 0);
+    if (userRole === 2) {
+        await firebase.firestore().collection('users').doc(userId).update({
+            teacher_role: { listOfClasses: [] }
+        });
+    } else if (userRole === 1) {
+        await firebase.firestore().collection('users').doc(userId).update({
+            parent_role: { listOfChildren: [] }
+        });
+    } else {
+        await firebase.firestore().collection('users').doc(userId).update({
+            student_role: {
+                parent_id: "",
+                class_id: "",
+                level: 1,
+                exp_points: 0,
+                diamonds: 0,
+                total_learning_time: 0,
+                total_practice_time: 0,
+                learning_progress: [],
+                activity_logs: [],
+                toys: [],
+                badges: []
+            }
+        });
+    }
+}
+
+const mockStudentData = {
+    student_role: {
+        parent_id: "",
+        class_id: "",
+        level: 3,
+        exp_points: 0,
+        diamonds: 200,
+        total_learning_time: 0,
+        total_practice_time: 30,
+        learning_progress: [
+            {
+                chapter: "Chương 1: Làm quen với các số đến 10",
+                lesson: "Bài 1: Các số 1,2,3",
+                status: 1,
+                errorDetails: "1 + 1= 3 2 + 4 = 6 3 + 3 = 7",
+                syncStatus: 1
+            },
+            {
+                chapter: "Chương 1: Làm quen với các số đến 10",
+                lesson: "Bài 2: Các số 4,5,6",
+                status: 0,
+                errorDetails: "4 + 1= 5 5 + 5 = 10 6 + 6 = 12",
+                syncStatus: 1
+            }
+        ],
+        badges: [
+            {
+                BadgeID: "FirstSteps",
+                name: "First Steps",
+                description: "Hoàn thành bài học toán đầu tiên.",
+                obtained_at: "2025-04-15"
+            },
+            {
+                BadgeID: "DailyMathematician",
+                name: "Daily Mathematician",
+                description: "Học toán ít nhất 3 ngày liên tiếp.",
+                obtained_at: "2025-05-15"
+            },
+            {
+                BadgeID: "CountingPro",
+                name: "Counting Pro",
+                description: "Hoàn thành bài tập đếm số đầu tiên.",
+                obtained_at: "2025-05-15"
+            },
+            {
+                BadgeID: "AdditionApprentice",
+                name: "Addition Apprentice",
+                description: "Hoàn thành phép cộng đầu tiên.",
+                obtained_at: "2025-07-15"
+            },
+            {
+                BadgeID: "SubtractionStarter",
+                name: "Subtraction Starter",
+                description: "Hoàn thành phép trừ đầu tiên.",
+                obtained_at: "2025-06-15"
+            },
+        ],
+        toys: [
+            {
+                toy_id: "Toy1",
+                name: "Toy 1",
+                description: "Toy 1 description",
+                obtained_at: "2025-04-15"
+            },
+            {
+                toy_id: "Toy2",
+                name: "Toy 2",
+                description: "Toy 2 description",
+                obtained_at: "2025-05-15"
+            },
+            {
+                toy_id: "Toy3",
+                name: "Toy 3",
+                description: "Toy 3 description",
+                obtained_at: "2025-06-15"
+            }
+        ],
+        activity_logs: [
+            {
+                student_id: "1",
+                activity_id: "log1",
+                activity_name: "Học tập: Chương 1. Bài 1: Các số 1,2,3",
+                date: new Date().toISOString(),
+                description: "Dạy trẻ cách xác định phương hướng",
+                correct_problems: 7 ,
+                total_problems: 7,
+                time_taken: 10,
+                activity_type: "Học tập",
+            },
+            {
+                student_id: "1",
+                activity_id: "log2",
+                activity_name: "Học tập: Chương 1. Bài 2: Các số 4,5,6",
+                date: new Date().toISOString(),
+                description: "Dạy trẻ cách xác định phương hướng",
+                correct_problems: 7,
+                total_problems: 7,
+                time_taken: 10,
+                activity_type: "Học tập",
+            },
+            {
+                student_id: "1",
+                activity_id: "log3",
+                activity_name: "Luyện tập: Mini-game đếm số",
+                date: new Date().toISOString(),
+                description: "Dạy trẻ cách xác định phương hướng",
+                correct_problems: 0,
+                total_problems: 0,
+                time_taken: 20,
+                activity_type: "Luyện tập",
+            }
+        ]
+    }
+}

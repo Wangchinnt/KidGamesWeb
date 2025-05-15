@@ -3,7 +3,7 @@ firebase.initializeApp(firebaseConfig);
 // Kiểm tra đăng nhập
 firebase.auth().onAuthStateChanged(async (user) => {
     if (!user) {
-        window.location.href = 'auth/signin.html';
+        window.location.href = '../index.html';
         return;
     }
     
@@ -22,32 +22,35 @@ firebase.auth().onAuthStateChanged(async (user) => {
     await loadNotification(userId);
     // Khởi tạo các event listeners cho chỉnh sửa lớp
     initializeEditClassHandlers(classId);
+    initProfileDropdown();
 });
-
+let allStudents = [];
 // Load dữ liệu lớp học
 async function loadClassData(userId, classId) {
     try {
-// Lấy document user (giáo viên)
-const userDoc = await firebase.firestore().collection('users').doc(userId).get();
-const userData = userDoc.data();
-const listOfClasses = userData.teacher_role?.listOfClasses || [];
+    // Lấy document user (giáo viên)
+    const userDoc = await firebase.firestore().collection('users').doc(userId).get();
+    const userData = userDoc.data();
+    const listOfClasses = Array.isArray(userData.teacher_role?.listOfClasses) 
+        ? userData.teacher_role.listOfClasses 
+        : [];
 
-// Tìm lớp cần hiển thị 
-const classInfo = listOfClasses.find(cls => cls.class_id === classId);
-    if (!classInfo) {
-        alert('Không tìm thấy thông tin lớp học!');
-        window.location.href = 'teacher-dashboard.html';
-        return;
-    }
+    // Tìm lớp cần hiển thị 
+    const classInfo = listOfClasses.find(cls => cls.class_id === classId);
+        if (!classInfo) {
+            alert('Không tìm thấy thông tin lớp học!');
+            window.location.href = 'teacher-dashboard.html';
+            return;
+        }
     // Hiển thị thông tin giáo viên
     document.querySelector('.user-info h2').textContent = userData.full_name;
-    document.querySelector('.user-info p').textContent = "Giáo viên " + classInfo.name.toLowerCase();
+    document.querySelector('.user-info p').textContent = "Giáo viên "
     // Hiển thị thông tin lớp
     document.querySelector('.class-info h1').textContent = classInfo.name;
     document.querySelector('.class-info p').textContent = `${classInfo.students?.length || 0} học sinh`;
-
+    allStudents = classInfo.students || [];
     // Load danh sách học sinh
-    await loadStudentsList(classInfo.students || []);
+    await loadStudentsList(allStudents);
 
     // Load thống kê
     await loadClassStatistics(classInfo);
@@ -108,28 +111,28 @@ function formatNotificationTime(timestamp) {
 
 // Load thống kê lớp
 async function loadClassStatistics(classInfo) {
-    const totalStudents = classInfo.students?.length || 0;
+    const totalStudents = allStudents.length;
     
     // Tính progress trung bình
     let totalProgress = 0;
     for (const student of classInfo.students) {
         totalProgress += await getCompletedPercentageProgress(student.student_id) || 0;
     }
-    const averageProgress = totalProgress / totalStudents;
+    const averageProgress = totalProgress / totalStudents || 0;
 
     // Tương tự cho các chỉ số khác
     let totalScore = 0;
     for (const student of classInfo.students) {
         totalScore += await getAverageScore(student.student_id) || 0;
     }
-    const averageScore = totalScore / totalStudents;
+    const averageScore = totalScore / totalStudents || 0;
 
     // Tổng thời gian học
     let totalTime = 0;
     for (const student of classInfo.students) {
         totalTime += await getTotalLearningTime(student.student_id) || 0;
     }
-    const averageLearningTime = totalTime / totalStudents;
+    const averageLearningTime = totalTime / totalStudents || 0;
 
     // Tổng thành tích
     let totalAchievements = 0;
@@ -190,47 +193,59 @@ const LESSON_STRUCTURE = {
         }
     ]
 };
+let currentStudentActivityLogs = [];
+let studentsListRenderToken = 0; // Thêm biến token toàn cục
 
 // Load danh sách học sinh
 async function loadStudentsList(students) {
     const tbody = document.getElementById('studentsList');
     tbody.innerHTML = '';
-  
-    for (const student of students) {
+
+    // Tăng token mỗi lần gọi mới
+    const thisRenderToken = ++studentsListRenderToken;
+    if (students.length === 0) {
+        tbody.innerHTML = '<tr><td colspan="5">Không có học sinh</td></tr>';
+        return;
+    }
+    // Dùng Promise.all để đảm bảo thứ tự và tránh lặp
+    const rows = await Promise.all(students.map(async (student) => {
         const progress = await getCompletedPercentageProgress(student.student_id);
         const averageScore = await getAverageScore(student.student_id);
         const totalAchievements = await getTotalAchievements(student.student_id);
-        const tr = document.createElement('tr');
-        tr.innerHTML = `
-            <td>${student.displayName}</td>
-            <td>
-                <div class="progress-container">
+        return `
+            <tr>
+                <td class="student-name">${student.displayName}</td>
+                <td>
                     <div class="progress-bar">
                         <div class="progress" style="width: ${progress}%"></div>
                     </div>
                     <span class="progress-text">${Math.round(progress)}% hoàn thành</span>
-                </div>
-            </td>
-            <td>${averageScore.toFixed(1)}</td>
-            <td>
-                <div class="achievement-count">
-                    <i class="fas fa-trophy"></i>
-                    <span>${totalAchievements}</span>
-                </div>
-            </td>
-            <td>
-                <button class="btn small" onclick="showStudentDetail('${student.student_id}')">
-                    <i class="fas fa-eye"></i>
-                </button>
-                <button class="btn small" onclick="showStudentDetail('${student.student_id}')">
-                    <i class="fas fa-edit"></i>
-                </button>
-                <button class="btn small" onclick="showStudentDetail('${student.student_id}')">
-                    <i class="fas fa-trash"></i>
-                </button>
-            </td>
+                </td>
+                <td>${averageScore.toFixed(1)}</td>
+                <td>
+                    <div class="achievement-count">
+                        <i class="fas fa-trophy"></i>
+                        <span>${totalAchievements}</span>
+                    </div>
+                </td>
+                <td>
+                    <button class="btn small" onclick="showStudentDetail('${student.student_id}')">
+                        <i class="fas fa-eye"></i>
+                    </button>
+                    <button class="btn small" onclick="editStudentDisplayName('${student.student_id}')">
+                        <i class="fas fa-edit"></i>
+                    </button>
+                    <button class="btn small" onclick="deleteStudent('${student.student_id}')">
+                        <i class="fas fa-trash"></i>
+                    </button>
+                </td>
+            </tr>
         `;
-        tbody.appendChild(tr);
+    }));
+
+    // Chỉ render nếu token chưa bị thay đổi (tức là không có lần render mới hơn)
+    if (thisRenderToken === studentsListRenderToken) {
+        tbody.innerHTML = rows.join('');
     }
 }
 
@@ -239,10 +254,8 @@ async function getCompletedPercentageProgress(studentId) {
     const userDoc = await firebase.firestore().collection('users').doc(studentId).get();
     const userData = userDoc.data();
     const progress = userData.student_role?.learning_progress    || [];
-    console.log(progress);
     // Đếm số lesson đã hoàn thành
     const completedLesson = progress.filter(p => p.status === 1).length;
-    console.log(completedLesson);
     // Tổng số lesson (giả sử có 20 lesson)
     const totalLesson = 20;
     
@@ -262,7 +275,7 @@ async function getAverageScore(studentId) {
         }
 
         // Lọc các hoạt động học tập
-        const learningActivities = activityLogs.filter(p => p.activity_type === "Learning");
+        const learningActivities = activityLogs.filter(p => p.activity_type === "Học tập");
         
         // Kiểm tra nếu không có hoạt động học tập
         if (!learningActivities.length) {
@@ -357,10 +370,10 @@ async function getTotalLearningTime(studentId) {
                 return;
             }
             // check if student is already in the class
-            // if (classInfo.students.some(student => student.student_id === studentId)) {
-            //     alert('Học sinh đã tham gia lớp!');
-            //     return;
-            // }
+            if (allStudents.some(student => student.student_id === studentId)) {
+                alert('Học sinh đã tồn tại trong lớp!');
+                return;
+            }
             await addStudentToClass(studentId);
             document.getElementById('addStudentModal').style.display = 'none';
         });
@@ -375,32 +388,70 @@ async function getTotalLearningTime(studentId) {
             // Lấy userId và classId từ context
             const user = firebase.auth().currentUser;
             if (!user) return;
-            // check if student is already in the class or that id is not a student
-            const userDoc = await firebase.firestore().collection('users').doc(user.uid).get();
-            if (!userDoc.exists) return;
-            const userData = userDoc.data();
-            userData.teacher_role.listOfClasses.forEach(cls => {
+
+            // Lấy thông tin học sinh
+            const studentDoc = await firebase.firestore().collection('users').doc(studentId).get();
+            if (!studentDoc.exists) return;
+            const studentData = studentDoc.data();
+
+            // Lấy thông tin giáo viên
+            const teacherDoc = await firebase.firestore().collection('users').doc(user.uid).get();
+            if (!teacherDoc.exists) return;
+            const teacherData = teacherDoc.data();
+
+            // Kiểm tra và khởi tạo teacher_role nếu chưa có
+            if (!teacherData.teacher_role) {
+                teacherData.teacher_role = {
+                    listOfClasses: []
+                };
+            }
+
+            // Tìm và cập nhật lớp học
+            const listOfClasses = teacherData.teacher_role.listOfClasses || [];
+            const updatedClasses = listOfClasses.map(cls => {
                 if (cls.class_id === classId) {
-                    // add student to class
-                    cls.students.push({
-                        student_id: studentId,
-                        displayName: userData.full_name,
-                        joined_at: new Date()
-                    });
-                    // update students
-                    firebase.firestore().collection('users').doc(user.uid).update({
-                        teacher_role: userData.teacher_role
-                    });  
+                    // Kiểm tra nếu học sinh đã có trong lớp chưa
+                    const alreadyInClass = cls.students.some(student => student.student_id === studentId);
+                    if (!alreadyInClass) {
+                        cls.students = cls.students || [];
+                        cls.students.push({
+                            student_id: studentId,
+                            displayName: studentData.full_name,
+                            joined_at: new Date()
+                        });
+                    }
                 }
+                return cls;
+            });
+
+            // Cập nhật vào Firestore
+            await firebase.firestore().collection('users').doc(user.uid).update({
+                "teacher_role.listOfClasses": updatedClasses
+            });
+
+            // Cập nhật student_role
+            await firebase.firestore().collection('users').doc(studentId).update({
+                "student_role.class_id": classId
             });
 
             alert('Đã thêm học sinh vào lớp thành công!');
             document.getElementById('addStudentModal').style.display = 'none';
-            } catch (error) {
-                console.error('Error adding student to class:', error);
-                alert('Có lỗi khi thêm học sinh vào lớp!');
-            }
-         }
+
+            // Cập nhật danh sách học sinh
+            allStudents.push({
+                student_id: studentId,
+                displayName: studentData.full_name,
+                joined_at: new Date()
+            });
+            await loadStudentsList(allStudents);
+
+            // Reload trang
+            window.location.reload();
+        } catch (error) {
+            console.error('Error adding student to class:', error);
+            alert('Có lỗi khi thêm học sinh vào lớp!');
+        }
+    }
      // get role of user by id
      async function getRoleOfUser(userId) {
         const userDoc = await firebase.firestore().collection('users').doc(userId).get();
@@ -457,7 +508,9 @@ async function getTotalLearningTime(studentId) {
         if (!userDoc.exists) return;
 
         const userData = userDoc.data();
-        const listOfClasses = userData.teacher_role?.listOfClasses || [];
+        const listOfClasses = Array.isArray(userData.teacher_role?.listOfClasses) 
+            ? userData.teacher_role.listOfClasses 
+            : [];
         
         // Tìm và cập nhật thông tin lớp
         const updatedClasses = listOfClasses.map(cls => {
@@ -473,7 +526,7 @@ async function getTotalLearningTime(studentId) {
 
         // Cập nhật vào Firestore
         await firebase.firestore().collection('users').doc(user.uid).update({
-            'teacher_role.listOfClasses': updatedClasses
+            "teacher_role.listOfClasses": updatedClasses
         });
 
         alert('Cập nhật thông tin lớp thành công!');
@@ -542,12 +595,44 @@ document.addEventListener('DOMContentLoaded', () => {
             if (modal) modal.style.display = 'none';
         });
     });
+
+    const timeFilter = document.getElementById('activityTimeFilter');
+    const typeFilter = document.getElementById('activityTypeFilter');
+
+    [timeFilter, typeFilter].forEach(filter => {
+        if (filter) {
+            filter.onchange = () => {
+                renderStudentActivities(currentStudentActivityLogs, {
+                    time: timeFilter.value,
+                    type: typeFilter.value
+                });
+            };
+        }
+    });
+
+    const searchInput = document.getElementById('studentSearchInput');
+    if (searchInput) {
+        searchInput.addEventListener('input', async function() {
+            const keyword = this.value.trim().toLowerCase();
+            // Lọc theo tên hiển thị (displayName) hoặc email nếu muốn
+            const filtered = allStudents.filter(student =>
+                student.displayName.toLowerCase().includes(keyword)
+                // || (student.email && student.email.toLowerCase().includes(keyword))
+            );
+            await loadStudentsList(filtered);
+        });
+    }
+
+    const exportBtn = document.getElementById('exportReportBtn');
+    if (exportBtn) {
+        exportBtn.addEventListener('click', exportClassReportCSV);
+    }
 });
 
 // Tính toán và hiển thị đồ thị
 async function calculateAndDisplayCharts(classInfo) {
     try {
-const students = classInfo.students || [];
+    const students = classInfo.students || [];
         if (students.length === 0) return;
 
         // 1. Tính phân bố điểm số
@@ -622,12 +707,21 @@ async function calculateActivityData(students, days) {
             const activityLogs = userData.student_role?.activity_logs || [];
 
             const dayActivities = activityLogs.filter(log => {
-                const logDateObj = log.date.toDate();
-                const logYear = logDateObj.getFullYear();
-                const logMonth = String(logDateObj.getMonth() + 1).padStart(2, '0');
-                const logDay = String(logDateObj.getDate()).padStart(2, '0');
-                const logDateStr = `${logYear}-${logMonth}-${logDay}`;
-                return logDateStr === compare && log.activity_type === "Learning";
+                let logDateObj = null;
+                if (log.date) {
+                    let d = null;
+                    if (typeof log.date.toDate === 'function') {
+                        d = log.date.toDate();
+                    } else if (typeof log.date === 'string') {
+                        d = new Date(log.date);
+                    }
+                    if (d && !isNaN(d.getTime())) {
+                        logDateObj = d;
+                    }
+                }
+                if (!logDateObj || isNaN(logDateObj.getTime())) return false;
+                const logDateStr = logDateObj.toISOString().split('T')[0];
+                return logDateStr === compare && log.activity_type === "Học tập";
             });
 
             totalActivities += dayActivities.length;
@@ -637,7 +731,7 @@ async function calculateActivityData(students, days) {
             });
         }
 
-        activities[i] = totalActivities;
+        activities[i] = totalActivities || 0;
         completionRates[i] = totalProblems > 0
             ? (totalCorrectProblems / totalProblems) * 100
             : 0;
@@ -656,8 +750,8 @@ async function calculateActivityData(students, days) {
             label: 'Tỷ lệ hoàn thành (%)',
             data: completionRates,
             type: 'line',
-            borderColor: '#ff9800',
-            backgroundColor: 'rgba(255, 152, 0, 0.1)',
+            borderColor: '#9800ff',
+            backgroundColor: 'rgba(152, 0, 255, 0.1)',
             fill: true,
             yAxisID: 'y1'
         }]
@@ -742,18 +836,20 @@ async function calculateScoreDistribution(students) {
     // Đếm số học sinh trong mỗi khoảng điểm
     for (const student of students) {
         const score = await getAverageScore(student.student_id);
-        const range = scoreRanges.find(r => score >= r.min && score < r.max);
+        console.log(score);
+        const range = scoreRanges.find(r => score >= r.min && score <= r.max);
         if (range) {
             const index = scoreRanges.indexOf(range);
             distribution[index].count++;
         }
     }
 
+    // Đảm bảo luôn có đủ các cột, kể cả khi count = 0
     return {
         labels: distribution.map(d => d.range),
         datasets: [{
             label: 'Số học sinh',
-            data: distribution.map(d => d.count),
+            data: distribution.map(d => d.count || 0),
             backgroundColor: '#4a90e2'
         }]
     };
@@ -871,29 +967,194 @@ async function deleteCurrentClass() {
         console.error(error);
     }
 }
+
 async function showStudentDetail(studentId) {
     try {
-    const studentDoc = await firebase.firestore().collection('users').doc(studentId).get();
-    if (!studentDoc.exists) {
-        alert("Không tìm thấy thông tin học sinh!");
-        return;
-    }
+        const studentDoc = await firebase.firestore().collection('users').doc(studentId).get();
+        if (!studentDoc.exists) {
+            alert("Không tìm thấy thông tin học sinh!");
+            return;
+        }
 
-    const studentData = studentDoc.data();
+        const studentData = studentDoc.data();
 
         // Cập nhật thông tin trong modal
         document.getElementById('detailStudentName').textContent = studentData.full_name;
-        
-        // Hiển thị modal
+        document.getElementById('detailStudentEmail').textContent = studentData.email;
+        document.getElementById('detailStudentPhone').textContent = studentData.phone || "Chưa có";
+        document.getElementById('detailStudentAddress').textContent = studentData.address || "Chưa có";
         document.getElementById('studentDetailModal').style.display = 'block';
+        // Render progress tree
+        const progressTree = await getStudentProgressTree(studentId);
+        renderProgressTree(progressTree);
+
+        // Render activity log
+        const activityLogs = studentData.student_role?.activity_logs || [];
+        currentStudentActivityLogs = activityLogs; // Cập nhật lại mỗi lần xem học sinh mới
+        renderStudentActivities(currentStudentActivityLogs);
+
+        // Render achievements
+        const badges = studentData.student_role?.badges || [];
+        renderStudentAchievements(badges);
         
-        // TODO: Load thêm thông tin chi tiết của học sinh
-        
+
     } catch (error) {
         console.error('Error loading student details:', error);
         alert('Có lỗi xảy ra khi tải thông tin học sinh!');
     }
 }
+
+async function editStudentDisplayName(studentId) {
+    try {
+        // 1. Lấy thông tin cần thiết
+        const user = firebase.auth().currentUser;
+        if (!user) {
+            alert("Vui lòng đăng nhập lại!");
+            return;
+        }
+
+        const classId = new URLSearchParams(window.location.search).get('classId');
+        if (!classId) {
+            alert("Không tìm thấy ID lớp học!");
+            return;
+        }
+
+        // 2. Lấy thông tin lớp học
+        const userDoc = await firebase.firestore().collection('users').doc(user.uid).get();
+        if (!userDoc.exists) {
+            alert("Không tìm thấy thông tin giáo viên!");
+            return;
+        }
+
+        const userData = userDoc.data();
+        const listOfClasses = userData.teacher_role?.listOfClasses || [];
+        const currentClass = listOfClasses.find(cls => cls.class_id === classId);
+        
+        if (!currentClass) {
+            alert("Không tìm thấy thông tin lớp học!");
+            return;
+        }
+
+        // 3. Tìm học sinh cần sửa
+        const studentIndex = currentClass.students.findIndex(student => student.student_id === studentId);
+        if (studentIndex === -1) {
+            alert("Không tìm thấy thông tin học sinh!");
+            return;
+        }
+
+        // 4. Hiển thị modal và lấy tên hiện tại
+        const currentDisplayName = currentClass.students[studentIndex].displayName;
+        document.getElementById('newDisplayName').value = currentDisplayName;
+        document.getElementById('editStudentDisplayNameModal').style.display = 'block';
+
+        // 5. Xử lý form submit
+        const form = document.getElementById('editStudentDisplayNameForm');
+        form.onsubmit = async (e) => {
+            e.preventDefault();
+            const newDisplayName = document.getElementById('newDisplayName').value.trim();
+            
+            if (!newDisplayName) {
+                alert("Tên hiển thị không được để trống!");
+                return;
+            }
+
+            try {
+                // 6. Cập nhật tên học sinh trong mảng
+                const updatedClasses = listOfClasses.map(cls => {
+                    if (cls.class_id === classId) {
+                        return {
+                            ...cls,
+                            students: cls.students.map((student, index) => {
+                                if (index === studentIndex) {
+                                    return { ...student, displayName: newDisplayName };
+                                }
+                                return student;
+                            })
+                        };
+                    }
+                    return cls;
+                });
+
+                // 7. Cập nhật vào Firestore
+                await firebase.firestore().collection('users').doc(user.uid).update({
+                    "teacher_role.listOfClasses": updatedClasses
+                });
+
+                // 8. Đóng modal và thông báo thành công
+                document.getElementById('editStudentDisplayNameModal').style.display = 'none';
+                alert('Đã cập nhật tên hiển thị học sinh thành công!');
+                
+                // 9. Reload trang để hiển thị thay đổi
+                window.location.reload();
+            } catch (error) {
+                console.error('Error updating student display name:', error);
+                alert('Có lỗi xảy ra khi cập nhật tên học sinh!');
+            }
+        };
+    } catch (error) {
+        console.error('Error in editStudentDisplayName:', error);
+        alert('Có lỗi xảy ra khi tải thông tin học sinh!');
+    }
+}
+
+async function deleteStudent(studentId) {
+    try {
+        const user = firebase.auth().currentUser;
+        if (!user) {
+            alert("Vui lòng đăng nhập lại!");
+            return;
+        }
+
+        const classId = new URLSearchParams(window.location.search).get('classId');
+        if (!classId) {
+            alert("Không tìm thấy ID lớp học!");
+            return;
+        }
+
+        const userDoc = await firebase.firestore().collection('users').doc(user.uid).get();
+        if (!userDoc.exists) {
+            alert("Không tìm thấy thông tin giáo viên!");
+            return;
+        }
+
+        const userData = userDoc.data();
+        const listOfClasses = userData.teacher_role?.listOfClasses || [];
+        const currentClass = listOfClasses.find(cls => cls.class_id === classId);
+
+        if (!currentClass) {
+            alert("Không tìm thấy thông tin lớp học!");
+            return;
+        }
+
+        const studentIndex = currentClass.students.findIndex(student => student.student_id === studentId);
+        if (studentIndex === -1) {
+            alert("Không tìm thấy thông tin học sinh!");
+            return;
+        }
+        // hỏi xác nhận
+        if (!confirm('Bạn có chắc chắn muốn xóa học sinh này không?')) {
+            return;
+        }
+        currentClass.students.splice(studentIndex, 1);
+
+        await firebase.firestore().collection('users').doc(user.uid).update({
+            "teacher_role.listOfClasses": listOfClasses
+        });
+        // update student role
+        await firebase.firestore().collection('users').doc(studentId).update({
+            "student_role.class_id": null
+        });
+        alert('Đã xóa học sinh thành công!');
+        window.location.reload();
+
+
+    } catch (error) {
+        console.error('Error in deleteStudent:', error);
+        alert('Có lỗi xảy ra khi xóa học sinh!');
+    }
+}
+
+
 
 // Thêm hàm mới để xử lý các event liên quan đến chỉnh sửa lớp
 async function initializeEditClassHandlers(classId) {
@@ -928,19 +1189,19 @@ async function initializeEditClassHandlers(classId) {
 }
 
 // Định nghĩa cấu trúc bài học
-
 async function loadLessonStatistics(classInfo) {
     try {
         const students = classInfo.students || [];
-        if (students.length === 0) return;
-
         // Tạo HTML cho các chapter
         const chapterList = document.querySelector('.chapter-list');
         if (!chapterList) return;
 
         // Xóa nội dung cũ
         chapterList.innerHTML = '';
-
+        if (students.length === 0) {
+            chapterList.innerHTML = '<div class="no-students">Không có học sinh trong lớp!</div>';
+            return;
+        }
         // Tạo HTML cho từng chapter
         LESSON_STRUCTURE.chapters.forEach(chapter => {
             const chapterHTML = `
@@ -969,9 +1230,9 @@ async function loadLessonStatistics(classInfo) {
                                 ${chapter.lessons.map(lesson => `
                                     <tr>
                                         <td>${lesson.title}</td>
-                                        <td><span class="status not-started">Chưa bắt đầu</span></td>
-                                        <td>0/${students.length}</td>
+                                        <td><span class="status">Chưa bắt đầu</span></td>
                                         <td>-</td>
+                                        <td>0.0</td>
                                         <td>
                                             ${lesson.activities.map(activity => 
                                                 `<span class="mini-game">${activity}</span>`
@@ -993,7 +1254,6 @@ async function loadLessonStatistics(classInfo) {
             return studentDoc.data();
         }));
 
-        let totalProgress = 0;
         let totalScore = 0;
         let totalCompletedLessons = 0;
 
@@ -1014,15 +1274,15 @@ async function loadLessonStatistics(classInfo) {
                 // Tính số học sinh đã học bài này
                 const studentsLearned = studentsData.filter(studentData => {
                     const learningProgress = studentData.student_role?.learning_progress || [];
-                    return learningProgress.some(p => p.lesson_id === lesson.title && p.status === 1);
+                    return learningProgress.some(p => p.lesson === lesson.title && p.status === 1);
                 });
 
                 // Tính điểm trung bình của bài học
                 const lessonScores = studentsLearned.map(studentData => {
                     const activityLogs = studentData.student_role?.activity_logs || [];
                     const lessonActivities = activityLogs.filter(log => 
-                        log.lesson_id === lesson.title && 
-                        log.activity_type === "Learning"
+                        log.activity_name.includes(lesson.title) && 
+                        log.activity_type === "Học tập"
                     );
                     
                     if (lessonActivities.length === 0) return 0;
@@ -1038,17 +1298,22 @@ async function loadLessonStatistics(classInfo) {
                     : 0;
 
                 // Cập nhật trạng thái
-                let status = 'not-started';
+                let status = 'Chưa bắt đầu';
                 let statusText = 'Chưa bắt đầu';
                 
                 if (studentsLearned.length === students.length) {
-                    status = 'completed';
+                    status = 'Đã hoàn thành';
                     statusText = 'Đã hoàn thành';
                     chapterCompletedLessons++;
                 } else if (studentsLearned.length > 0) {
-                    status = 'in-progress';
+                    status = 'Đang học';
                     statusText = 'Đang học';
                 }
+
+                let statusClass = '';
+                if (status === 'Chưa bắt đầu') statusClass = 'not-started';
+                else if (status === 'Đang học') statusClass = 'in-progress';
+                else if (status === 'Đã hoàn thành') statusClass = 'completed';
 
                 // Cập nhật UI
                 const statusCell = row.querySelector('td:nth-child(2)');
@@ -1056,7 +1321,7 @@ async function loadLessonStatistics(classInfo) {
                 const scoreCell = row.querySelector('td:nth-child(4)');
 
                 if (statusCell) {
-                    statusCell.innerHTML = `<span class="status ${status}">${statusText}</span>`;
+                    statusCell.innerHTML = `<span class="status ${statusClass}">${statusText}</span>`;
                 }
                 if (studentsCell) {
                     studentsCell.textContent = `${studentsLearned.length}/${students.length}`;
@@ -1089,7 +1354,7 @@ async function loadLessonStatistics(classInfo) {
         // Cập nhật thống kê chung
         const averageProgress = (totalCompletedLessons / (LESSON_STRUCTURE.chapters.reduce((acc, chapter) => 
             acc + chapter.lessons.length, 0))) * 100;
-        const averageScore = totalScore / LESSON_STRUCTURE.chapters.length;
+        const averageScore = totalScore / totalCompletedLessons || 0;
 
         // Cập nhật UI thống kê chung
         document.querySelector('.stat-item:nth-child(1) .progress').style.width = `${averageProgress}%`;
@@ -1100,4 +1365,362 @@ async function loadLessonStatistics(classInfo) {
     } catch (error) {
         console.error('Error loading class statistics:', error);
     }
+}
+// Hàm render progress tree
+function renderProgressTree(progressTree) {
+    const treeContainer = document.querySelector('.progress-tree');
+    if (!treeContainer) return;
+
+    treeContainer.innerHTML = progressTree.map((chapter, idx) => `
+        <div class="progress-chapter" data-idx="${idx}">
+            <div class="chapter-header" style="cursor:pointer;">
+                <span class="chapter-toggle"><i class="fas fa-chevron-down"></i></span>
+                <span class="chapter-title">${chapter.chapter}</span>
+                <span class="chapter-percent">${chapter.percent}%</span>
+                <div class="chapter-bar">
+                    <div class="chapter-bar-inner" style="width:${chapter.percent}%"></div>
+                </div>
+            </div>
+            <ul class="lesson-list">
+                ${chapter.lessons.map(lesson => `
+                    <li class="lesson-item">
+                        <span class="lesson-name">${lesson.name}</span>
+                        <span class="lesson-percent">${lesson.percent}%</span>
+                        <div class="lesson-bar">
+                            <div class="lesson-bar-inner" style="width:${lesson.percent}%"></div>
+                        </div>
+                    </li>
+                `).join('')}
+            </ul>
+        </div>
+    `).join('');
+
+    // Accordion event
+    document.querySelectorAll('.progress-chapter .chapter-header').forEach((header) => {
+        header.addEventListener('click', function() {
+            const chapter = header.parentElement;
+            const lessonList = chapter.querySelector('.lesson-list');
+            const icon = header.querySelector('.chapter-toggle i');
+            lessonList.classList.toggle('collapsed');
+            icon.classList.toggle('fa-chevron-down');
+            icon.classList.toggle('fa-chevron-right');
+        });
+    });
+}
+
+// Thêm event listener cho các tab
+document.addEventListener('DOMContentLoaded', () => {
+    const tabButtons = document.querySelectorAll('.tab-btn');
+    const tabPanes = document.querySelectorAll('.tab-pane');
+
+    tabButtons.forEach(button => {
+        button.addEventListener('click', () => {
+            // Xóa class active của tất cả các tab button
+            tabButtons.forEach(btn => btn.classList.remove('active'));
+            // Thêm class active cho tab button được click
+            button.classList.add('active');
+
+            // Ẩn tất cả các tab pane
+            tabPanes.forEach(pane => {
+                pane.classList.remove('active');
+                pane.style.display = 'none';
+            });
+
+            // Hiển thị tab pane tương ứng
+            const tabId = button.getAttribute('data-tab');
+            const targetPane = document.getElementById(tabId);
+            if (targetPane) {
+                targetPane.classList.add('active');
+                targetPane.style.display = 'block';
+                // Nếu là tab progress thì render progress tree
+            }
+        });
+    });
+
+    // Hiển thị tab mặc định (progress)
+    const defaultTab = document.querySelector('.tab-btn[data-tab="progress"]');
+    if (defaultTab) {
+        defaultTab.click();
+    }
+});
+
+async function getStudentProgressTree(studentId) {
+    // Lấy dữ liệu học sinh
+    const studentDoc = await firebase.firestore().collection('users').doc(studentId).get();
+    const studentData = studentDoc.data();
+    const activityLogs = studentData.student_role?.activity_logs || [];
+
+    // Duyệt từng chương
+    const progressTree = LESSON_STRUCTURE.chapters.map(chapter => {
+        // Duyệt từng bài trong chương
+        const lessons = chapter.lessons.map(lesson => {
+            // Tìm các activity log liên quan đến bài này (dựa vào tên bài)
+            const logs = activityLogs.filter(log =>
+                log.activity_type === "Học tập" &&
+                log.activity_name.includes(lesson.title)
+            );
+            console.log(logs);
+            // Tính tổng số câu đúng và tổng số câu
+            let totalCorrect = 0, total = 0;
+            logs.forEach(log => {
+                totalCorrect += log.correct_problems || 0;
+                total += log.total_problems || 0;
+            });
+            // Tính percent
+            let percent = 0;
+            if (total > 0) {
+                percent = (totalCorrect / total)* 100;
+                percent = Math.round(percent); // Làm tròn cho đẹp
+            }
+            return {
+                name: lesson.title,
+                percent: percent
+            };
+        });
+
+        // Tính percent của chương là trung bình các bài
+        const chapterPercent = lessons.length
+            ? Math.round(lessons.reduce((sum, l) => sum + l.percent, 0) / lessons.length)
+            : 0;
+
+        return {
+            chapter: chapter.title,
+            percent: chapterPercent,
+            lessons: lessons
+        };
+    });
+    return progressTree;
+}
+
+function renderStudentActivities(activityLogs, filters = {}) {
+    const tbody = document.querySelector('#activities .activity-table tbody');
+    if (!tbody) return;
+
+    // Lọc theo filter
+    let filteredLogs = activityLogs;
+
+    // Lọc theo thời gian
+    if (filters.time && filters.time !== 'Tất cả thời gian') {
+        const days = parseInt(filters.time, 10);
+        const now = new Date();
+        filteredLogs = filteredLogs.filter(log => {
+            let logDateObj = null;
+            if (log.date) {
+                let d = null;
+                if (typeof log.date.toDate === 'function') {
+                    d = log.date.toDate();
+                } else if (typeof log.date === 'string') {
+                    d = new Date(log.date);
+                }
+                if (d && !isNaN(d.getTime())) {
+                    logDateObj = d;
+                }
+            }
+            if (!logDateObj || isNaN(logDateObj.getTime())) return false;
+            const diff = (now - logDateObj) / (1000 * 60 * 60 * 24);
+            return diff <= days;
+        });
+    }
+
+
+    // Lọc theo loại hoạt động
+    if (filters.type && filters.type !== 'Tất cả hoạt động') {
+        filteredLogs = filteredLogs.filter(log =>
+            log.activity_type === filters.type
+        );
+    }
+
+    // Tính tổng số phút bài tập và tổng số phút học
+    let totalPracticeMinutes = 0;
+    let totalLearningMinutes = 0;
+    filteredLogs.forEach(log => {
+        if (log.activity_type === "Luyện tập") {
+            totalPracticeMinutes += log.time_taken || 0;
+        }
+        if (log.activity_type === "Học tập") {
+            totalLearningMinutes += log.time_taken || 0;
+        }
+    });
+
+    // Render activity summary
+    const summaryDiv = document.querySelector('#activities .activity-summary');
+    if (summaryDiv) {
+        summaryDiv.innerHTML = `
+            <span><strong>${totalPracticeMinutes}</strong> phút bài tập</span>
+            <span style="margin: 0 10px;">|</span>
+            <span><strong>${totalLearningMinutes}</strong> phút học</span>
+        `;
+    }
+    console.log(filteredLogs,filters);
+    // Render bảng hoạt động
+    if (!filteredLogs.length) {
+        tbody.innerHTML = `<tr><td colspan="4">Chưa có hoạt động nào</td></tr>`;
+        return;
+    }
+
+    tbody.innerHTML = filteredLogs
+        .map(log => {
+            // Format ngày
+            let dateStr = '';
+            if (log.date) {
+                let d = null;
+                if (typeof log.date.toDate === 'function') {
+                    d = log.date.toDate();
+                } else if (typeof log.date === 'string') {
+                    d = new Date(log.date);
+                }
+                if (d && !isNaN(d.getTime())) {
+                    dateStr = `Thg ${String(d.getMonth() + 1).padStart(2, '0')} ${String(d.getDate()).padStart(2, '0')}, ${d.getFullYear()} vào lúc ${String(d.getHours()).padStart(2, '0')}:${String(d.getMinutes()).padStart(2, '0')}`;
+                }
+            }
+
+            return `
+                <tr>
+                    <td>
+                        <strong>${log.activity_name || ''}</strong><br>
+                        <span class="activity-desc">${log.description || ''}</span>
+                    </td>
+                    <td>${dateStr}</td>
+                    <td>${log.correct_problems || 0}/${log.total_problems || 0}</td>
+                    <td>${log.time_taken || 0}</td>
+                </tr>
+            `;
+        }).join('');
+}
+
+function renderStudentAchievements(badges) {
+    const grid = document.querySelector('#achievements .achievements-grid');
+    if (!grid) return;
+
+    if (!badges || badges.length === 0) {
+        grid.innerHTML = `<div>Chưa có thành tích nào</div>`;
+        return;
+    }
+
+    grid.innerHTML = badges.map(badge => {
+        // Format ngày đạt được
+        let dateStr = '';
+        if (badge.obtained_at) {
+            if (typeof badge.obtained_at === 'string') {
+                // Nếu là string, thử parse sang Date
+                dateStr = badge.obtained_at;
+            } else if (typeof badge.obtained_at.toDate === 'function') {
+                // Nếu là Firestore Timestamp
+                const d = badge.obtained_at.toDate();
+                dateStr = `${d.getDate().toString().padStart(2, '0')}/${(d.getMonth()+1).toString().padStart(2, '0')}/${d.getFullYear()}`;
+            }
+        }
+
+        return `
+            <div class="achievement-card">
+                <div class="achievement-icon">
+                    <img src="../images/badges/${badge.BadgeID}.png" alt="${badge.Name}" style="width:48px;height:48px;object-fit:contain;">
+                </div>
+                <h5>${badge.Name || badge.BadgeID}</h5>
+                <p>${badge.Description || ''}</p>
+                <div class="achievement-date">${dateStr ? `Đạt được: ${dateStr}` : ''}</div>
+            </div>
+        `;
+    }).join('');
+}
+
+async function exportClassReportCSV() {
+    // Lấy danh sách học sinh
+    const students = allStudents;
+    if (!students.length) {
+        alert('Không có học sinh trong lớp!');
+        return;
+    }
+
+    // Header
+    const headers = [
+        'Tên học sinh',
+        'Email',
+        '% hoàn thành',
+        'Điểm trung bình',
+        'Số bài đã hoàn thành',
+        'Số thành tích',
+        'Tổng thời gian học (phút)'
+    ];
+
+    // Dữ liệu từng học sinh
+    const rows = [];
+    for (const student of students) {
+        const userDoc = await firebase.firestore().collection('users').doc(student.student_id).get();
+        const userData = userDoc.data();
+        const displayName = student.displayName || userData.full_name || '';
+        const email = userData.email || '';
+        const percent = Math.round(await getCompletedPercentageProgress(student.student_id) || 0);
+        const avgScore = Number((await getAverageScore(student.student_id) || 0).toFixed(1));
+        const completedLessons = Number((userData.student_role?.learning_progress || []).filter(p => p.status === 1).length || 0);
+        const badges = Number((userData.student_role?.badges || []).length || 0);
+        const totalTime = Number(userData.student_role?.total_learning_time || 0);
+
+        rows.push([
+            displayName || '',
+            email || '',
+            percent != null && !isNaN(percent) ? percent : 0,
+            avgScore != null && !isNaN(avgScore) ? avgScore : 0,
+            completedLessons != null && !isNaN(completedLessons) ? completedLessons : 0,
+            badges != null && !isNaN(badges) ? badges : 0,
+            totalTime != null && !isNaN(totalTime) ? totalTime : 0
+        ]);
+    }
+
+    // Tạo nội dung CSV
+    let csvContent = headers.join(',') + '\n';
+    rows.forEach(row => {
+        csvContent += row.map(item => `"${item}"`).join(',') + '\n';
+    });
+
+    const classId = new URLSearchParams(window.location.search).get('classId');
+    const classInfo = await getCurrentClass(classId);
+    const className = classInfo.name;
+    // Tạo file và tải về
+    const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = `class_${className}_report.csv`;
+    document.body.appendChild(a);
+    a.click();
+    document.body.removeChild(a);
+    URL.revokeObjectURL(url);
+}
+
+// Thêm hàm initProfileDropdown
+function initProfileDropdown() {
+    const profileBtn = document.querySelector('.profile-btn');
+    const dropdownContent = document.querySelector('.dropdown-content');
+    const viewProfileBtn = document.getElementById('view-profile-btn');
+    const logoutBtn = document.getElementById('logout-btn');
+
+    // Mở/đóng dropdown khi click vào nút profile
+    profileBtn.addEventListener('click', (e) => {
+        e.stopPropagation();
+        dropdownContent.style.display = dropdownContent.style.display === 'block' ? 'none' : 'block';
+    });
+
+    // Ngăn chặn sự kiện click trong dropdown lan ra ngoài
+    dropdownContent.addEventListener('click', (e) => {
+        e.stopPropagation();
+    });
+
+    // Đóng dropdown khi click ra ngoài
+    document.addEventListener('click', () => {
+        dropdownContent.style.display = 'none';
+    });
+
+    // Xử lý view profile
+    viewProfileBtn.addEventListener('click', (e) => {
+        e.preventDefault();
+        window.location.href = 'profile.html' + '?userId=' + userId;
+    });
+
+    // Xử lý đăng xuất
+    logoutBtn.addEventListener('click', (e) => {
+        e.preventDefault();
+        firebase.auth().signOut();
+        window.location.href = '../index.html';
+    });
 }

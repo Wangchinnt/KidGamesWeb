@@ -60,13 +60,14 @@ function formatNotificationTime(timestamp) {
 document.addEventListener('DOMContentLoaded', async () => {
     firebase.auth().onAuthStateChanged(async (user) => {
         if (!user) {
-            window.location.href = '../auth/signin.html';
+            window.location.href = '../index.html';
             return;
         }
         const userData = await loadTeacherData(user.uid);
         initNavigation();
         initNotifications(userData);
         initSettings(userData);
+        initProfileDropdown();
 
         // Bắt sự kiện cho notification button
         const notificationBtn = document.querySelector('.notification-btn');
@@ -307,13 +308,42 @@ function initSettings(userData) {
     });
 }
 
-// Xử lý đăng xuất
-document.getElementById('logout-btn').addEventListener('click', function(e) {
-    e.preventDefault();
-    firebase.auth().signOut().then(() => {
-        window.location.href = '../auth/signin.html';
+// Thêm hàm initProfileDropdown
+function initProfileDropdown() {
+    const profileBtn = document.querySelector('.profile-btn');
+    const dropdownContent = document.querySelector('.dropdown-content');
+    const viewProfileBtn = document.getElementById('view-profile-btn');
+    const logoutBtn = document.getElementById('logout-btn');
+
+    // Mở/đóng dropdown khi click vào nút profile
+    profileBtn.addEventListener('click', (e) => {
+        e.stopPropagation();
+        dropdownContent.style.display = dropdownContent.style.display === 'block' ? 'none' : 'block';
     });
-});
+
+    // Ngăn chặn sự kiện click trong dropdown lan ra ngoài
+    dropdownContent.addEventListener('click', (e) => {
+        e.stopPropagation();
+    });
+
+    // Đóng dropdown khi click ra ngoài
+    document.addEventListener('click', () => {
+        dropdownContent.style.display = 'none';
+    });
+    // Xử lý  view profile
+    viewProfileBtn.addEventListener('click', (e) => {
+        e.preventDefault();
+        const user = firebase.auth().currentUser;
+        if (!user) return;
+        window.location.href = 'profile.html' + '?userId=' + user.uid;
+    });
+    // Xử lý đăng xuất
+    logoutBtn.addEventListener('click', (e) => {
+        e.preventDefault();
+        firebase.auth().signOut();
+        window.location.href = '../index.html';
+    });
+}
 
 // Load dữ liệu giáo viên từ Firestore
 async function loadTeacherData(userId) {
@@ -326,7 +356,8 @@ async function loadTeacherData(userId) {
     // Hiển thị tên giáo viên
     const userInfo = document.querySelector('.user-info h2');
     if (userInfo) userInfo.textContent = userData.full_name || "Giáo viên";
-
+    const userRole = document.querySelector('.user-info p');
+    if (userRole) userRole.textContent = "Giáo viên";
     // Hiển thị lớp học trong tab riêng
     const classesGridTab = document.getElementById('classes-grid-tab');
     if (classesGridTab) {

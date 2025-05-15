@@ -1,0 +1,17 @@
+{
+  "pageLoad": {
+    "min": 584,
+    "max": 1219,
+    "avg": 890.1
+  },
+  "domContent": {
+    "min": 64,
+    "max": 357,
+    "avg": 150.7
+  },
+  "firstPaint": {
+    "min": 84,
+    "max": 644,
+    "avg": 209.6
+  }
+}
